@@ -22,6 +22,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\HtmlString;
 
 
 class BackendPanelProvider extends PanelProvider
@@ -57,10 +59,23 @@ class BackendPanelProvider extends PanelProvider
                 'Sistem', // Grup default Filament
                 'Pengguna', // Grup default Filament
                 'Web Setting', // Grup custom
+                'Master Data',      // Grup master                
+                'Kepegawaian',      // Grup kepegawaian
                
                
                 // Urutan grup sesuai kebutuhan
             ])
+
+            //ini untuk hide menu web setting (bisa di buka kalau digunakan lagi)
+            ->renderHook(
+                PanelsRenderHook::SIDEBAR_NAV_START,
+                fn () => new HtmlString('
+                    <style>
+                        [data-group-label="Web Setting"] { display: none !important; }
+                        [data-group-label="Sistems"] { display: none !important; }
+                    </style>
+                ')
+            )
            
             ->middleware([
                 EncryptCookies::class,
