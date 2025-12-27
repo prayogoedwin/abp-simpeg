@@ -1,6 +1,6 @@
-# Filament Starter
+# ABP - Simple Simpeg
 
-Starter project berbasis **Laravel + Filament Admin Panel**.  
+Simple Simpeg project berbasis **Laravel + Filament Admin Panel**.  
 Repositori ini ditujukan untuk mempermudah setup awal aplikasi dengan integrasi **Role & Permission** menggunakan Spatie.
 
 ## 🚀 Fitur
