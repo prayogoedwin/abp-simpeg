@@ -36,9 +36,9 @@ class PosisiResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
-    protected static ?string $modelLabel = 'Posisi';
+    // protected static ?string $modelLabel = 'Posisi';
 
-    protected static ?string $pluralModelLabel = 'Posisi';
+    // protected static ?string $pluralModelLabel = 'Posisi';
 
     public static function form(Schema $schema): Schema
     {
