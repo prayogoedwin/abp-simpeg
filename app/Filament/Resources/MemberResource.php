@@ -270,12 +270,12 @@ class MemberResource extends Resource
                     ->icon('heroicon-o-phone')
                     ->toggleable(),
 
-                TextColumn::make('tanggal_kontrak_berakhir')
-                    ->label('Kontrak Berakhir')
-                    ->date('d M Y')
-                    ->sortable()
-                    ->color(fn ($record) => $record->isKontrakAkanBerakhir(30) ? 'danger' : null)
-                    ->icon(fn ($record) => $record->isKontrakAkanBerakhir(30) ? 'heroicon-o-exclamation-triangle' : null),
+                // TextColumn::make('tanggal_kontrak_berakhir')
+                //     ->label('Kontrak Berakhir')
+                //     ->date('d M Y')
+                //     ->sortable()
+                //     ->color(fn ($record) => $record->isKontrakAkanBerakhir(30) ? 'danger' : null)
+                //     ->icon(fn ($record) => $record->isKontrakAkanBerakhir(30) ? 'heroicon-o-exclamation-triangle' : null),
 
                 TextColumn::make('status_kepegawaian')
                     ->label('Status')
@@ -327,6 +327,66 @@ class MemberResource extends Resource
 
                 TrashedFilter::make(),
             ])
+            // ->headerActions([
+            //     TableAction::make('export')
+            //         ->label('Export Excel')
+            //         ->icon('heroicon-o-arrow-down-tray')
+            //         ->color('success')
+            //         ->action(function () {
+            //             return Excel::download(new MembersExport, 'pegawai-' . date('Y-m-d') . '.xlsx');
+            //         }),
+
+            //     TableAction::make('downloadTemplate')
+            //         ->label('Download Template')
+            //         ->icon('heroicon-o-document-arrow-down')
+            //         ->color('warning')
+            //         ->action(function () {
+            //             return Excel::download(new MembersTemplateExport, 'template-import-pegawai.xlsx');
+            //         }),
+
+            //     TableAction::make('import')
+            //         ->label('Import Excel')
+            //         ->icon('heroicon-o-arrow-up-tray')
+            //         ->color('info')
+            //         ->form([
+            //             FileUpload::make('file')
+            //                 ->label('File Excel')
+            //                 ->acceptedFileTypes(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'])
+            //                 ->required()
+            //                 ->directory('imports'),
+            //         ])
+            //         ->action(function (array $data) {
+            //             try {
+            //                 Excel::import(new MembersImport, storage_path('app/public/' . $data['file']));
+                            
+            //                 Notification::make()
+            //                     ->title('Import Berhasil')
+            //                     ->body('Data pegawai berhasil diimport.')
+            //                     ->success()
+            //                     ->send();
+            //             } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            //                 $failures = $e->failures();
+            //                 $errorMessages = [];
+                            
+            //                 foreach ($failures as $failure) {
+            //                     $errorMessages[] = "Baris {$failure->row()}: " . implode(', ', $failure->errors());
+            //                 }
+                            
+            //                 Notification::make()
+            //                     ->title('Import Gagal')
+            //                     ->body(implode("\n", array_slice($errorMessages, 0, 5)))
+            //                     ->danger()
+            //                     ->persistent()
+            //                     ->send();
+            //             } catch (\Exception $e) {
+            //                 Notification::make()
+            //                     ->title('Import Gagal')
+            //                     ->body('Terjadi kesalahan: ' . $e->getMessage())
+            //                     ->danger()
+            //                     ->send();
+            //             }
+            //         }),
+            // ])
             ->headerActions([
                 TableAction::make('export')
                     ->label('Export Excel')
@@ -351,33 +411,44 @@ class MemberResource extends Resource
                     ->form([
                         FileUpload::make('file')
                             ->label('File Excel')
-                            ->acceptedFileTypes(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'])
+                            ->acceptedFileTypes([
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 
+                                'application/vnd.ms-excel',
+                            ])
                             ->required()
+                            ->disk('local')
                             ->directory('imports'),
                     ])
                     ->action(function (array $data) {
                         try {
-                            Excel::import(new MembersImport, storage_path('app/public/' . $data['file']));
+                            $filePath = \Illuminate\Support\Facades\Storage::disk('local')->path($data['file']);
+
+                            $import = new MembersImport;
+                            Excel::import($import, $filePath);
                             
-                            Notification::make()
-                                ->title('Import Berhasil')
-                                ->body('Data pegawai berhasil diimport.')
-                                ->success()
-                                ->send();
-                        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-                            $failures = $e->failures();
-                            $errorMessages = [];
+                            // Hapus file setelah import
+                            \Illuminate\Support\Facades\Storage::disk('local')->delete($data['file']);
                             
-                            foreach ($failures as $failure) {
-                                $errorMessages[] = "Baris {$failure->row()}: " . implode(', ', $failure->errors());
+                            // Tampilkan hasil
+                            if ($import->imported > 0) {
+                                Notification::make()
+                                    ->title('Import Berhasil')
+                                    ->body("Berhasil import {$import->imported} data. Dilewati: {$import->skipped}")
+                                    ->success()
+                                    ->send();
+                            } else {
+                                $errorMsg = count($import->errors) > 0 
+                                    ? implode("\n", array_slice($import->errors, 0, 5))
+                                    : 'Tidak ada data yang diimport. Pastikan format Excel sesuai template.';
+                                    
+                                Notification::make()
+                                    ->title('Import Gagal')
+                                    ->body($errorMsg)
+                                    ->warning()
+                                    ->persistent()
+                                    ->send();
                             }
-                            
-                            Notification::make()
-                                ->title('Import Gagal')
-                                ->body(implode("\n", array_slice($errorMessages, 0, 5)))
-                                ->danger()
-                                ->persistent()
-                                ->send();
+                                
                         } catch (\Exception $e) {
                             Notification::make()
                                 ->title('Import Gagal')

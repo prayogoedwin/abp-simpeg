@@ -5,123 +5,126 @@ namespace App\Imports;
 use App\Models\Member;
 use App\Models\Instansi;
 use App\Models\Posisi;
-use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
-use Maatwebsite\Excel\Concerns\SkipsOnError;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
-use Maatwebsite\Excel\Concerns\Importable;
-use Maatwebsite\Excel\Validators\Failure;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
-use Throwable;
 
-class MembersImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyRows, SkipsOnError, SkipsOnFailure
+class MembersImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 {
-    use Importable;
+    public $imported = 0;
+    public $skipped = 0;
+    public $errors = [];
 
-    private $errors = [];
-    private $failures = [];
-
-    public function model(array $row)
+    public function collection(Collection $rows)
     {
-        // Cari instansi berdasarkan nama
-        $instansi = null;
-        if (!empty($row['instansi'])) {
-            $instansi = Instansi::where('nama', trim($row['instansi']))->first();
+        Log::info('Import started', ['total_rows' => $rows->count()]);
+
+        foreach ($rows as $index => $row) {
+            $rowNumber = $index + 2;
+            
+            try {
+                $row = $row->toArray();
+                $row = array_change_key_case($row, CASE_LOWER);
+                
+                Log::info("Processing row {$rowNumber}", $row);
+
+                if (empty($row['nama_lengkap'])) {
+                    Log::warning("Row {$rowNumber}: nama_lengkap kosong, skip");
+                    $this->skipped++;
+                    continue;
+                }
+
+                $nik = $this->parseNumericToString($row['nik'] ?? null, 16);
+                $noKaryawan = !empty($row['no_karyawan']) ? trim((string) $row['no_karyawan']) : null;
+                $email = !empty($row['email']) ? trim((string) $row['email']) : null;
+
+                if ($nik && Member::where('nik', $nik)->exists()) {
+                    Log::warning("Row {$rowNumber}: NIK {$nik} sudah ada, skip");
+                    $this->skipped++;
+                    $this->errors[] = "Baris {$rowNumber}: NIK {$nik} sudah terdaftar";
+                    continue;
+                }
+                
+                if ($noKaryawan && Member::where('no_karyawan', $noKaryawan)->exists()) {
+                    Log::warning("Row {$rowNumber}: No Karyawan {$noKaryawan} sudah ada, skip");
+                    $this->skipped++;
+                    $this->errors[] = "Baris {$rowNumber}: No Karyawan {$noKaryawan} sudah terdaftar";
+                    continue;
+                }
+                
+                if ($email && Member::where('email', $email)->exists()) {
+                    Log::warning("Row {$rowNumber}: Email {$email} sudah ada, skip");
+                    $this->skipped++;
+                    $this->errors[] = "Baris {$rowNumber}: Email {$email} sudah terdaftar";
+                    continue;
+                }
+
+                $instansi = null;
+                if (!empty($row['instansi'])) {
+                    $instansi = Instansi::where('nama', 'like', '%' . trim($row['instansi']) . '%')->first();
+                }
+
+                $posisi = null;
+                if (!empty($row['posisi'])) {
+                    $posisi = Posisi::where('nama', 'like', '%' . trim($row['posisi']) . '%')->first();
+                }
+
+                $member = Member::create([
+                    'no_karyawan' => $noKaryawan,
+                    'nik' => $nik,
+                    'name' => trim($row['nama_lengkap']),
+                    'jenis_kelamin' => $this->parseJenisKelamin($row['jenis_kelamin'] ?? null),
+                    'tanggal_lahir' => $this->parseDate($row['tanggal_lahir'] ?? null),
+                    'alamat' => $row['alamat'] ?? null,
+                    'email' => $email,
+                    'whatsapp' => $this->parseNumericToString($row['whatsapp'] ?? null),
+                    'instansi_id' => $instansi ? $instansi->id : null,
+                    'posisi_id' => $posisi ? $posisi->id : null,
+                    'tanggal_masuk' => $this->parseDate($row['tanggal_masuk'] ?? null),
+                    'tanggal_kontrak_berakhir' => $this->parseDate($row['tanggal_kontrak_berakhir'] ?? null),
+                    'status_kepegawaian' => $this->parseStatusKepegawaian($row['status_kepegawaian'] ?? null),
+                    'status' => $this->parseStatusAkun($row['status_akun'] ?? null),
+                    'password' => Hash::make($row['password'] ?? '12345678'),
+                ]);
+
+                Log::info("Row {$rowNumber}: Member created", ['id' => $member->id, 'name' => $member->name]);
+                $this->imported++;
+
+            } catch (\Exception $e) {
+                Log::error("Row {$rowNumber}: Error - " . $e->getMessage());
+                $this->errors[] = "Baris {$rowNumber}: " . $e->getMessage();
+                $this->skipped++;
+            }
         }
 
-        // Cari posisi berdasarkan nama
-        $posisi = null;
-        if (!empty($row['posisi'])) {
-            $posisi = Posisi::where('nama', trim($row['posisi']))->first();
-        }
-
-        // Parse tanggal
-        $tanggalLahir = $this->parseDate($row['tanggal_lahir'] ?? null);
-        $tanggalMasuk = $this->parseDate($row['tanggal_masuk'] ?? null);
-        $tanggalKontrakBerakhir = $this->parseDate($row['tanggal_kontrak_berakhir'] ?? null);
-
-        // Parse NIK - handle scientific notation
-        $nik = $this->parseNumericToString($row['nik'] ?? null, 16);
-
-        // Parse WhatsApp - handle scientific notation
-        $whatsapp = $this->parseNumericToString($row['whatsapp'] ?? null);
-
-        // Parse No Karyawan
-        $noKaryawan = isset($row['no_karyawan']) ? trim((string) $row['no_karyawan']) : null;
-
-        // Parse jenis kelamin
-        $jenisKelamin = $this->parseJenisKelamin($row['jenis_kelamin'] ?? null);
-
-        // Parse status kepegawaian
-        $statusKepegawaian = $this->parseStatusKepegawaian($row['status_kepegawaian'] ?? null);
-
-        // Parse status akun
-        $statusAkun = $this->parseStatusAkun($row['status_akun'] ?? null);
-
-        // Cek duplikat sebelum insert
-        if ($nik && Member::where('nik', $nik)->exists()) {
-            return null;
-        }
-        if ($noKaryawan && Member::where('no_karyawan', $noKaryawan)->exists()) {
-            return null;
-        }
-        if (!empty($row['email']) && Member::where('email', $row['email'])->exists()) {
-            return null;
-        }
-
-        return new Member([
-            'no_karyawan' => $noKaryawan,
-            'nik' => $nik,
-            'name' => trim($row['nama_lengkap']),
-            'jenis_kelamin' => $jenisKelamin,
-            'tanggal_lahir' => $tanggalLahir,
-            'alamat' => $row['alamat'] ?? null,
-            'email' => !empty($row['email']) ? trim($row['email']) : null,
-            'whatsapp' => $whatsapp,
-            'instansi_id' => $instansi?->id,
-            'posisi_id' => $posisi?->id,
-            'tanggal_masuk' => $tanggalMasuk,
-            'tanggal_kontrak_berakhir' => $tanggalKontrakBerakhir,
-            'status_kepegawaian' => $statusKepegawaian,
-            'status' => $statusAkun,
-            'password' => Hash::make($row['password'] ?? '12345678'),
-        ]);
+        Log::info('Import completed', ['imported' => $this->imported, 'skipped' => $this->skipped]);
     }
 
-    /**
-     * Parse numeric value to string - handle scientific notation
-     */
-    private function parseNumericToString($value, ?int $padLength = null): ?string
+    private function parseNumericToString($value, $padLength = null)
     {
         if (empty($value) && $value !== '0') {
             return null;
         }
 
         $value = (string) $value;
-
-        // Hapus petik di depan jika ada
         $value = ltrim($value, "'\"");
 
-        // Handle scientific notation (contoh: 3.20123E+15)
         if (preg_match('/^[\d.]+E\+?\d+$/i', $value)) {
-            // Gunakan sprintf untuk convert tanpa kehilangan presisi
             $value = sprintf('%.0f', (float) $value);
         }
 
-        // Handle float yang mungkin dari Excel
         if (is_numeric($value) && strpos($value, '.') !== false) {
             $value = sprintf('%.0f', (float) $value);
         }
 
-        // Hapus karakter non-numerik (kecuali untuk no_karyawan yang bisa mengandung huruf)
         if ($padLength !== null) {
             $value = preg_replace('/[^0-9]/', '', $value);
         }
 
-        // Pad dengan 0 di depan jika perlu (untuk NIK)
         if ($padLength !== null && strlen($value) < $padLength && strlen($value) > 0) {
             $value = str_pad($value, $padLength, '0', STR_PAD_LEFT);
         }
@@ -129,9 +132,6 @@ class MembersImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmp
         return !empty($value) ? $value : null;
     }
 
-    /**
-     * Parse tanggal dari berbagai format
-     */
     private function parseDate($value)
     {
         if (empty($value)) {
@@ -139,24 +139,12 @@ class MembersImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmp
         }
 
         try {
-            // Jika numeric (Excel serial date)
             if (is_numeric($value)) {
                 return Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((float) $value));
             }
 
             $value = trim((string) $value);
-
-            // Coba berbagai format tanggal
-            $formats = [
-                'd/m/Y',
-                'd-m-Y',
-                'Y-m-d',
-                'd/m/y',
-                'd-m-y',
-                'Y/m/d',
-                'd.m.Y',
-                'd.m.y',
-            ];
+            $formats = ['d/m/Y', 'd-m-Y', 'Y-m-d', 'd/m/y', 'd-m-y'];
 
             foreach ($formats as $format) {
                 try {
@@ -169,17 +157,13 @@ class MembersImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmp
                 }
             }
 
-            // Terakhir coba parse otomatis
             return Carbon::parse($value);
         } catch (\Exception $e) {
             return null;
         }
     }
 
-    /**
-     * Parse jenis kelamin
-     */
-    private function parseJenisKelamin($value): ?string
+    private function parseJenisKelamin($value)
     {
         if (empty($value)) {
             return null;
@@ -198,10 +182,7 @@ class MembersImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmp
         return null;
     }
 
-    /**
-     * Parse status kepegawaian
-     */
-    private function parseStatusKepegawaian($value): string
+    private function parseStatusKepegawaian($value)
     {
         if (empty($value)) {
             return 'aktif';
@@ -215,23 +196,17 @@ class MembersImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmp
             '1' => 'aktif',
             'nonaktif' => 'nonaktif',
             'non-aktif' => 'nonaktif',
-            'non aktif' => 'nonaktif',
             'inactive' => 'nonaktif',
             '0' => 'nonaktif',
             'cuti' => 'cuti',
-            'leave' => 'cuti',
             'resign' => 'resign',
             'keluar' => 'resign',
-            'quit' => 'resign',
         ];
 
         return $mapping[$value] ?? 'aktif';
     }
 
-    /**
-     * Parse status akun
-     */
-    private function parseStatusAkun($value): bool
+    private function parseStatusAkun($value)
     {
         if (empty($value)) {
             return true;
@@ -239,46 +214,6 @@ class MembersImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmp
 
         $value = strtolower(trim((string) $value));
 
-        $activeValues = ['aktif', 'active', 'ya', 'yes', '1', 'true', 'on'];
-
-        return in_array($value, $activeValues);
-    }
-
-    public function rules(): array
-    {
-        return [
-            'nama_lengkap' => 'required|string|max:255',
-            'email' => 'nullable|email',
-        ];
-    }
-
-    public function customValidationMessages(): array
-    {
-        return [
-            'nama_lengkap.required' => 'Nama lengkap wajib diisi',
-            'email.email' => 'Format email tidak valid',
-        ];
-    }
-
-    public function onError(Throwable $e)
-    {
-        $this->errors[] = $e->getMessage();
-    }
-
-    public function onFailure(Failure ...$failures)
-    {
-        foreach ($failures as $failure) {
-            $this->failures[] = $failure;
-        }
-    }
-
-    public function getErrors(): array
-    {
-        return $this->errors;
-    }
-
-    public function getFailures(): array
-    {
-        return $this->failures;
+        return in_array($value, ['aktif', 'active', 'ya', 'yes', '1', 'true', 'on']);
     }
 }
