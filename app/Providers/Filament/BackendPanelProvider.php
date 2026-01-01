@@ -73,7 +73,7 @@ class BackendPanelProvider extends PanelProvider
                     <style>
                         [data-group-label="Web Setting"] { display: none !important; }
                         [data-group-label="Sistems"] { display: none !important; }
-                        [data-group-label="c"] { display: none !important; }
+                        [data-group-label="Posisis"] { display: none !important; }
                     </style>
                 ')
             )
