@@ -23,6 +23,7 @@ class Absensi extends Model
         'jam_masuk',
         'jam_pulang',
         'status',
+        'is_overnight',
         'telat_menit',
         'pulang_awal_menit',
         'lat_masuk',
@@ -53,6 +54,7 @@ class Absensi extends Model
         'jarak_lokasi_pulang' => 'decimal:2',
         'device_info' => 'array',
         'approved_at' => 'datetime',
+        'is_overnight' => 'boolean',
     ];
 
     // ==================== CONSTANTS ====================

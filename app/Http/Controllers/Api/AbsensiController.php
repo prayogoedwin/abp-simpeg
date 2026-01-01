@@ -10,6 +10,13 @@ use Carbon\Carbon;
 
 class AbsensiController extends Controller
 {
+
+     private function isOvernightClockIn(Carbon $time): bool
+    {
+        $hour = $time->hour;
+        return $hour >= 18 && $hour <= 23;
+    }
+
     /**
      * Absen masuk
      */
@@ -24,16 +31,41 @@ class AbsensiController extends Controller
         $member = $request->user();
         $today = Carbon::today();
 
-        // Cek sudah absen masuk hari ini belum
-        $existingAbsensi = Absensi::where('member_id', $member->id)
-            ->whereDate('tanggal', $today)
+        // Cek ada absensi aktif yang belum clock out
+        $activeAbsensi = Absensi::where('member_id', $member->id)
+            ->whereNotNull('jam_masuk')
+            ->whereNull('jam_pulang')
+            ->where('tanggal', '>=', Carbon::yesterday())
             ->first();
 
-        if ($existingAbsensi && $existingAbsensi->jam_masuk) {
+        if ($activeAbsensi) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda masih punya absensi aktif yang belum clock out.',
+                'data' => [
+                    'id' => $activeAbsensi->id,
+                    'tanggal' => $activeAbsensi->tanggal->format('Y-m-d'),
+                    'jam_masuk' => $activeAbsensi->jam_masuk_formatted,
+                    'is_overnight' => $activeAbsensi->is_overnight,
+                ],
+            ], 422);
+        }
+
+        // Cek sudah absen masuk hari ini belum (untuk non-overnight)
+        $existingAbsensi = Absensi::where('member_id', $member->id)
+            ->whereDate('tanggal', $today)
+            ->whereNotNull('jam_masuk')
+            ->first();
+
+        if ($existingAbsensi) {
             return response()->json([
                 'success' => false,
                 'message' => 'Anda sudah absen masuk hari ini.',
-                'data' => $existingAbsensi,
+                'data' => [
+                    'id' => $existingAbsensi->id,
+                    'tanggal' => $existingAbsensi->tanggal->format('Y-m-d'),
+                    'jam_masuk' => $existingAbsensi->jam_masuk_formatted,
+                ],
             ], 422);
         }
 
@@ -58,6 +90,9 @@ class AbsensiController extends Controller
 
         $jamMasuk = Carbon::now();
         $jadwalMasuk = $jamKerja?->jam_masuk;
+
+        // Cek apakah overnight (clock in jam 18:00 - 23:59)
+        $isOvernight = $this->isOvernightClockIn($jamMasuk);
         
         // Hitung telat
         $telatMenit = 0;
@@ -79,10 +114,11 @@ class AbsensiController extends Controller
             ],
             [
                 'instansi_id' => $member->instansi_id,
-                'jadwal_jam_masuk' => $jadwalMasuk,
-                'jadwal_jam_pulang' => $jamKerja?->jam_pulang,
+                // 'jadwal_jam_masuk' => $jadwalMasuk,
+                // 'jadwal_jam_pulang' => $jamKerja?->jam_pulang,
                 'jam_masuk' => $jamMasuk->format('H:i:s'),
                 'status' => $status,
+                'is_overnight' => $isOvernight,
                 'telat_menit' => $telatMenit,
                 'lat_masuk' => $request->lat,
                 'lng_masuk' => $request->lng,
@@ -124,25 +160,29 @@ class AbsensiController extends Controller
         ]);
 
         $member = $request->user();
+        $now = Carbon::now();
         $today = Carbon::today();
 
-        // Cek sudah absen masuk belum
+        // Cari absensi aktif (belum clock out)
+        // Untuk shift malam, cek juga kemarin
         $absensi = Absensi::where('member_id', $member->id)
-            ->whereDate('tanggal', $today)
+            ->whereNotNull('jam_masuk')
+            ->whereNull('jam_pulang')
+            ->where(function ($query) use ($today) {
+                $query->whereDate('tanggal', $today) // Absensi hari ini
+                    ->orWhere(function ($q) use ($today) {
+                        // Atau absensi kemarin yang overnight
+                        $q->whereDate('tanggal', Carbon::yesterday())
+                            ->where('is_overnight', true);
+                    });
+            })
+            ->orderBy('tanggal', 'desc')
             ->first();
 
-        if (!$absensi || !$absensi->jam_masuk) {
+        if (!$absensi) {
             return response()->json([
                 'success' => false,
-                'message' => 'Anda belum absen masuk hari ini.',
-            ], 422);
-        }
-
-        if ($absensi->jam_pulang) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Anda sudah absen pulang hari ini.',
-                'data' => $absensi,
+                'message' => 'Tidak ada absensi aktif. Silakan clock in terlebih dahulu.',
             ], 422);
         }
 
@@ -159,13 +199,29 @@ class AbsensiController extends Controller
             $jarak = $jarak ? $jarak * 1000 : null; // convert to meter
         }
 
-        $jamPulang = Carbon::now();
+        $jamPulang = $now;
         $jadwalPulang = $absensi->jadwal_jam_pulang;
-        
+
         // Hitung pulang awal
         $pulangAwalMenit = 0;
         if ($jadwalPulang) {
             $jadwalPulangCarbon = Carbon::parse($jadwalPulang);
+            
+            // Untuk overnight, jadwal pulang adalah hari berikutnya
+            if ($absensi->is_overnight) {
+                $jadwalPulangCarbon->setDate(
+                    $absensi->tanggal->copy()->addDay()->year,
+                    $absensi->tanggal->copy()->addDay()->month,
+                    $absensi->tanggal->copy()->addDay()->day
+                );
+            } else {
+                $jadwalPulangCarbon->setDate(
+                    $absensi->tanggal->year,
+                    $absensi->tanggal->month,
+                    $absensi->tanggal->day
+                );
+            }
+
             if ($jamPulang->lt($jadwalPulangCarbon)) {
                 $pulangAwalMenit = $jadwalPulangCarbon->diffInMinutes($jamPulang);
             }
@@ -222,11 +278,11 @@ class AbsensiController extends Controller
             'data' => [
                 'tanggal' => $today->format('Y-m-d'),
                 'hari' => $today->translatedFormat('l'),
-                'jadwal' => [
-                    'jam_masuk' => $jamKerja?->jam_masuk?->format('H:i'),
-                    'jam_pulang' => $jamKerja?->jam_pulang?->format('H:i'),
-                    'jenis' => $jamKerja?->jenis_jam_kerja,
-                ],
+                // 'jadwal' => [
+                //     'jam_masuk' => $jamKerja?->jam_masuk?->format('H:i'),
+                //     'jam_pulang' => $jamKerja?->jam_pulang?->format('H:i'),
+                //     'jenis' => $jamKerja?->jenis_jam_kerja,
+                // ],
                 'absensi' => $absensi ? [
                     'id' => $absensi->id,
                     'jam_masuk' => $absensi->jam_masuk_formatted,
