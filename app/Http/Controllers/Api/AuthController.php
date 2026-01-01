@@ -123,4 +123,95 @@ class AuthController extends Controller
             ],
         ]);
     }
+
+    /**
+     * Update profile member
+     */
+    public function updateProfile(Request $request)
+    {
+        $member = $request->user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:members,email,' . $member->id,
+            'whatsapp' => 'nullable|string|max:20|unique:members,whatsapp,' . $member->id,
+            'alamat' => 'nullable|string|max:500',
+            'jenis_kelamin' => 'nullable|in:L,P',
+            'tanggal_lahir' => 'nullable|date',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        $data = $request->only([
+            'name',
+            'email',
+            'whatsapp',
+            'alamat',
+            'jenis_kelamin',
+            'tanggal_lahir',
+        ]);
+
+        // Handle upload foto
+        if ($request->hasFile('foto')) {
+            // Hapus foto lama jika ada
+            if ($member->foto && Storage::disk('public')->exists($member->foto)) {
+                Storage::disk('public')->delete($member->foto);
+            }
+
+            $data['foto'] = $request->file('foto')->store('members', 'public');
+        }
+
+        $member->update($data);
+        $member->load(['instansi', 'posisi']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profil berhasil diperbarui',
+            'data' => [
+                'id' => $member->id,
+                'name' => $member->name,
+                'email' => $member->email,
+                'nik' => $member->nik,
+                'no_karyawan' => $member->no_karyawan,
+                'whatsapp' => $member->whatsapp,
+                'alamat' => $member->alamat,
+                'jenis_kelamin' => $member->jenis_kelamin,
+                'jenis_kelamin_label' => $member->jenis_kelamin_label,
+                'tanggal_lahir' => $member->tanggal_lahir?->format('Y-m-d'),
+                'umur' => $member->umur,
+                'foto' => $member->foto ? asset('storage/' . $member->foto) : null,
+                'instansi' => $member->instansi?->only(['id', 'nama', 'alamat', 'lat', 'lng']),
+                'posisi' => $member->posisi?->only(['id', 'nama']),
+            ],
+        ]);
+    }
+
+    /**
+     * Update password member
+     */
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $member = $request->user();
+
+        // Cek password lama
+        if (!Hash::check($request->current_password, $member->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['Password lama tidak sesuai.'],
+            ]);
+        }
+
+        // Update password baru
+        $member->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password berhasil diperbarui',
+        ]);
+    }
 }

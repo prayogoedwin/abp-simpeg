@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+// use Illuminate\Support\Facades\Storage;
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AbsensiController;
@@ -16,6 +17,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/profile', [AuthController::class, 'profile']);
+    Route::post('/profile/update', [AuthController::class, 'updateProfile']);
+    Route::post('/password/update', [AuthController::class, 'updatePassword']);
 
     Route::prefix('absensi')->group(function () {
         Route::get('/today', [AbsensiController::class, 'today']);
