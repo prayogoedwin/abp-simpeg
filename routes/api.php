@@ -26,5 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/clock-out', [AbsensiController::class, 'clockOut']);
         Route::get('/rekap', [AbsensiController::class, 'rekap']);
         Route::get('/history', [AbsensiController::class, 'history']);
+
+        Route::post('/status-lain', [AbsensiController::class, 'storeStatusLainnya']);
     });
 });

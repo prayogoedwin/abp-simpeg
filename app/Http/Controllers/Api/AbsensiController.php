@@ -382,4 +382,65 @@ class AbsensiController extends Controller
             'data' => $absensis,
         ]);
     }
+
+    /**
+     * Submit izin/sakit/cuti
+     * POST /api/absensi/izin
+     */
+    public function storeStatusLainnya(Request $request)
+    {
+        $request->validate([
+            'status' => 'required|in:izin,sakit,cuti',
+            'tanggal' => 'required|date',
+            'keterangan' => 'nullable|string|max:500',
+        ]);
+
+        $member = $request->user();
+        $tanggal = Carbon::parse($request->tanggal);
+
+        // Cek apakah sudah ada absensi di tanggal tersebut
+        $existing = Absensi::where('member_id', $member->id)
+            ->whereDate('tanggal', $tanggal)
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sudah ada data absensi di tanggal tersebut.',
+                'data' => [
+                    'id' => $existing->id,
+                    'tanggal' => $existing->tanggal->format('Y-m-d'),
+                    'status' => $existing->status,
+                ],
+            ], 422);
+        }
+
+        // Create absensi dengan status izin/sakit/cuti
+        $absensi = Absensi::create([
+            'member_id' => $member->id,
+            'instansi_id' => $member->instansi_id,
+            'tanggal' => $tanggal,
+            'jam_masuk' => null,
+            'jam_pulang' => null,
+            'status' => $request->status,
+            'keterangan' => $request->keterangan ?? ucfirst($request->status),
+            'device_info' => [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pengajuan ' . $request->status . ' berhasil disimpan.',
+            'data' => [
+                'id' => $absensi->id,
+                'tanggal' => $absensi->tanggal->format('Y-m-d'),
+                'hari' => $absensi->tanggal->translatedFormat('l'),
+                'status' => $absensi->status,
+                'status_label' => $absensi->status_label,
+                'keterangan' => $absensi->keterangan,
+            ],
+        ]);
+    }
 }
