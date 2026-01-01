@@ -10,13 +10,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
 use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
+use Laravel\Sanctum\HasApiTokens;
 
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
 class Member extends Model implements Authenticatable
 {
-    use HasFactory, SoftDeletes, AuthenticatableTrait, CanResetPasswordTrait, LogsActivity;
+    use HasFactory, SoftDeletes, AuthenticatableTrait, CanResetPasswordTrait, LogsActivity, HasApiTokens;
 
     protected $table = 'members';
 
@@ -175,5 +176,10 @@ class Member extends Model implements Authenticatable
     {
         if (!$this->tanggal_kontrak_berakhir) return false;
         return $this->sisa_kontrak <= $days && $this->sisa_kontrak >= 0;
+    }
+
+    public function absensis(): HasMany
+    {
+        return $this->hasMany(Absensi::class, 'member_id');
     }
 }

@@ -50,3 +50,17 @@ Menjalankan server development:
 
 ## 📜 Lisensi
 Proyek ini menggunakan lisensi [MIT](LICENSE).
+
+
+##running sacntum
+# Install Sanctum
+composer require laravel/sanctum
+
+# Publish config & migration
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+
+# Install API (Laravel 11+)
+php artisan install:api
+
+# Migrate
+php artisan migrate
