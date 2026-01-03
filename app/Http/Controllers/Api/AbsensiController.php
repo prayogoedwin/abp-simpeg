@@ -300,7 +300,51 @@ class AbsensiController extends Controller
                     'sudah_masuk' => false,
                     'sudah_pulang' => false,
                 ],
-                'instansi' => $member->instansi?->only(['id', 'nama', 'lat', 'lng']),
+                'instansi' => $member->instansi?->only(['id', 'nama', 'lat', 'lng', 'radius']),
+            ],
+        ]);
+    }
+
+    public function last(Request $request)
+    {
+        $member = $request->user();
+
+        // Cari absensi yang belum pulang (untuk shift malam)
+        $absensi = Absensi::where('member_id', $member->id)
+            ->whereNull('deleted_at')
+            ->whereNotNull('jam_masuk')
+            ->whereNull('jam_pulang')
+            ->orderBy('tanggal', 'desc')
+            ->first();
+
+        // Jika tidak ada yang belum pulang, ambil absensi terakhir
+        if (!$absensi) {
+            $absensi = Absensi::where('member_id', $member->id)
+                ->whereNull('deleted_at')
+                ->orderBy('tanggal', 'desc')
+                ->first();
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'absensi' => $absensi ? [
+                    'id' => $absensi->id,
+                    'tanggal' => $absensi->tanggal->format('Y-m-d'),
+                    'hari' => $absensi->tanggal->translatedFormat('l'),
+                    'jam_masuk' => $absensi->jam_masuk_formatted,
+                    'jam_pulang' => $absensi->jam_pulang_formatted,
+                    'status' => $absensi->status,
+                    'status_label' => $absensi->status_label,
+                    'telat_menit' => $absensi->telat_menit,
+                    'pulang_awal_menit' => $absensi->pulang_awal_menit,
+                    'jarak_masuk' => $absensi->jarak_masuk_formatted,
+                    'jarak_pulang' => $absensi->jarak_pulang_formatted,
+                    'sudah_masuk' => $absensi->jam_masuk !== null,
+                    'sudah_pulang' => $absensi->jam_pulang !== null,
+                    'is_pending_checkout' => $absensi->jam_masuk !== null && $absensi->jam_pulang === null,
+                ] : null,
+                'instansi' => $member->instansi?->only(['id', 'nama', 'lat', 'lng', 'radius']),
             ],
         ]);
     }

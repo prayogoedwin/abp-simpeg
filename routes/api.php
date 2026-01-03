@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('absensi')->group(function () {
         Route::get('/today', [AbsensiController::class, 'today']);
+        Route::get('/last', [AbsensiController::class, 'last']);
         Route::post('/clock-in', [AbsensiController::class, 'clockIn']);
         Route::post('/clock-out', [AbsensiController::class, 'clockOut']);
         Route::get('/rekap', [AbsensiController::class, 'rekap']);
