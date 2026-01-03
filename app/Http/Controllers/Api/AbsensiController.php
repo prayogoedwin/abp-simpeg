@@ -265,6 +265,7 @@ class AbsensiController extends Controller
 
         $absensi = Absensi::where('member_id', $member->id)
             ->whereDate('tanggal', $today)
+            ->whereNull('deleted_at')
             ->first();
 
         // Get jadwal jam kerja
