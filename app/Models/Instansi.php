@@ -21,6 +21,7 @@ class Instansi extends Model
         'alamat',
         'lat',
         'lng',
+        'radius',
         'google_maps_link',
         'telepon',
         'email',
