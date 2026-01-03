@@ -133,6 +133,7 @@ class AuthController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
+            'nik' => 'required|string|max:255',
             'email' => 'required|email|unique:members,email,' . $member->id,
             'whatsapp' => 'nullable|string|max:20|unique:members,whatsapp,' . $member->id,
             'alamat' => 'nullable|string|max:500',
@@ -143,6 +144,7 @@ class AuthController extends Controller
 
         $data = $request->only([
             'name',
+            'nik',
             'email',
             'whatsapp',
             'alamat',
