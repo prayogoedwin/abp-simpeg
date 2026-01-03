@@ -160,7 +160,7 @@ class AuthController extends Controller
                 Storage::disk('public')->delete($member->foto);
             }
 
-            $data['foto'] = $request->file('foto')->store('members', 'public');
+            $data['foto'] = $request->file('foto')->store('pegawai', 'public');
         }
 
         $member->update($data);
