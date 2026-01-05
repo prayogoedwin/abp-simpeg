@@ -74,6 +74,7 @@ class BackendPanelProvider extends PanelProvider
                         [data-group-label="Web Setting"] { display: none !important; }
                         [data-group-label="Sistems"] { display: none !important; }
                         [data-group-label="Posisi"] { display: none !important; }
+                        [data-group-label="Jam Kerja"] { display: none !important; }
                     </style>
                 ')
             )
