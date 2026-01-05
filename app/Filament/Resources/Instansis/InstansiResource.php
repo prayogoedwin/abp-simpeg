@@ -29,6 +29,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\ToggleButtons;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Model; 
 
 class InstansiResource extends Resource
 {
