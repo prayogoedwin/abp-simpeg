@@ -50,27 +50,27 @@ class JenisPegawaiResource extends Resource
 
     public static function canView(Model $record): bool
     {
-        return auth()->check() && auth()->user()->can('view jenis_pegawais');
+        return auth()->check() && auth()->user()->can('view jenis_pegawai');
     }
 
     public static function canCreate(): bool
     {
-        return auth()->check() && auth()->user()->can('create jenis_pegawais');
+        return auth()->check() && auth()->user()->can('create jenis_pegawai');
     }
 
     public static function canEdit(Model $record): bool
     {
-        return auth()->check() && auth()->user()->can('edit jenis_pegawais');
+        return auth()->check() && auth()->user()->can('edit jenis_pegawai');
     }
 
     public static function canDelete(Model $record): bool
     {
-        return auth()->check() && auth()->user()->can('delete jenis_pegawais');
+        return auth()->check() && auth()->user()->can('delete jenis_pegawai');
     }
 
     public static function canDeleteAny(): bool
     {
-        return auth()->check() && auth()->user()->can('delete jenis_pegawais');
+        return auth()->check() && auth()->user()->can('delete jenis_pegawai');
     }
 
     public static function form(Schema $schema): Schema
