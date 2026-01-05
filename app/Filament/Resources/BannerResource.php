@@ -42,7 +42,7 @@ class BannerResource extends Resource
     protected static ?string $modelLabel = 'Banner';
     protected static ?string $pluralModelLabel = 'Banner';
 
-      public static function canAccess(): bool
+    public static function canAccess(): bool
     {
         return auth()->check() && auth()->user()->can('view banners');
     }

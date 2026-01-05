@@ -44,6 +44,41 @@ class InstansiResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Instansi';
 
+    public static function canAccess(): bool
+    {
+        return auth()->check() && auth()->user()->can('view instansis');
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->check() && auth()->user()->can('view instansis');
+    }
+
+    public static function canView(Model $record): bool
+    {
+        return auth()->check() && auth()->user()->can('view instansis');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->check() && auth()->user()->can('create instansis');
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->check() && auth()->user()->can('edit instansis');
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->check() && auth()->user()->can('delete instansis');
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return auth()->check() && auth()->user()->can('delete instansis');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
