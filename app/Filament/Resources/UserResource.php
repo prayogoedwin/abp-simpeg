@@ -19,6 +19,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Spatie\Permission\Models\Role;
 
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
@@ -82,9 +83,10 @@ class UserResource extends Resource
                 TextInput::make('name')->required()->columnSpanFull(),
                 TextInput::make('email')->required(),
                 Select::make('roles')
-                ->relationship('roles', 'name')
-                ->preload()
-                ->label('Roles'),
+                ->multiple()
+                ->options(Role::pluck('name', 'id'))
+                ->label('Roles')
+                ->preload(),
                 TextInput::make('password')
                 ->required()
                 ->password() // Ubah menjadi input type password
