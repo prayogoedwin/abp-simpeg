@@ -42,6 +42,8 @@ class JamKerjaResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Jam Kerja';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     public static function form(Schema $schema): Schema
     {
         return $schema
