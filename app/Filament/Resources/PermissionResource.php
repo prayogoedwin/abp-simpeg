@@ -71,7 +71,8 @@ class PermissionResource extends Resource
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->label('Module Name (e.g., users)')
+                    ->label('Module Name (e.g., users, instansis)')
+                    ->helperText('Akan otomatis membuat: view, create, edit, delete')
                     ->required(),
 
                 TextInput::make('guard_name')
@@ -128,7 +129,7 @@ class PermissionResource extends Resource
     {
         return [
             'index' => ListPermissions::route('/'),
-            // 'create' => Pages\CreatePermission::route('/create'),
+            'create' => Pages\CreatePermission::route('/create'),
             'edit' => EditPermission::route('/{record}/edit'),
         ];
     }
