@@ -23,6 +23,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Model;
 
 class JenisPegawaiResource extends Resource
 {
