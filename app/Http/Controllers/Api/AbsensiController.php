@@ -36,6 +36,7 @@ class AbsensiController extends Controller
             ->whereNotNull('jam_masuk')
             ->whereNull('jam_pulang')
             ->where('tanggal', '>=', Carbon::yesterday())
+            ->where('is_overnight', 1)
             ->first();
 
         if ($activeAbsensi) {
