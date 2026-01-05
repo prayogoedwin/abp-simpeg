@@ -38,6 +38,41 @@ class JenisPegawaiResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Jenis Pegawai';
 
+    public static function canAccess(): bool
+    {
+        return auth()->check() && auth()->user()->can('view jenis_pegawais');
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->check() && auth()->user()->can('view jenis_pegawais');
+    }
+
+    public static function canView(Model $record): bool
+    {
+        return auth()->check() && auth()->user()->can('view jenis_pegawais');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->check() && auth()->user()->can('create jenis_pegawais');
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->check() && auth()->user()->can('edit jenis_pegawais');
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->check() && auth()->user()->can('delete jenis_pegawais');
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return auth()->check() && auth()->user()->can('delete jenis_pegawais');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
