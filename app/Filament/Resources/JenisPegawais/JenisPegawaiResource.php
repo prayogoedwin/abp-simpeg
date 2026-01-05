@@ -41,12 +41,12 @@ class JenisPegawaiResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->check() && auth()->user()->can('view jenis_pegawais');
+        return auth()->check() && auth()->user()->can('view jenis_pegawai');
     }
 
     public static function canViewAny(): bool
     {
-        return auth()->check() && auth()->user()->can('view jenis_pegawais');
+        return auth()->check() && auth()->user()->can('view jenis_pegawai');
     }
 
     public static function canView(Model $record): bool
