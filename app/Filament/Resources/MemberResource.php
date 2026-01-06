@@ -296,6 +296,12 @@ class MemberResource extends Resource
                     ->falseIcon('heroicon-o-x-circle')
                     ->falseColor('danger')
                     ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('identity_name')
+                ->label('Device')
+                    ->placeholder('Belum terdaftar')
+                    ->icon('heroicon-o-device-phone-mobile')
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
@@ -462,6 +468,31 @@ class MemberResource extends Resource
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
+                    TableAction::make('resetDevice')
+                        ->label('Reset Device')
+                        ->icon('heroicon-o-device-phone-mobile')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->modalHeading('Reset Device')
+                        ->modalDescription(fn (Member $record) => $record->identity_name 
+                            ? "Yakin ingin reset device \"{$record->identity_name}\" dari akun {$record->name}?" 
+                            : "Akun ini belum terdaftar di device manapun."
+                        )
+                        ->modalSubmitActionLabel('Ya, Reset')
+                        ->visible(fn (Member $record) => $record->identity !== null)
+                        ->action(function (Member $record) {
+                            $record->update([
+                                'identity' => null,
+                                'identity_name' => null,
+                                'device_name' => null,
+                            ]);
+
+                            Notification::make()
+                                ->title('Device Berhasil Direset')
+                                ->body("Device untuk {$record->name} telah direset. Pegawai dapat login dari perangkat baru.")
+                                ->success()
+                                ->send();
+                        }),
                     DeleteAction::make(),
                 ]),
             ])
