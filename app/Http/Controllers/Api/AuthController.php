@@ -21,11 +21,17 @@ class AuthController extends Controller
             'username' => 'required|string',
             'password' => 'required|string',
             'device_name' => 'nullable|string',
+            'identity' => 'nullable|string',
+            'identity_name' => 'nullable|string',
         ]);
 
         $username = $request->username;
         $password = $request->password;
-        $deviceName = $request->device_name ?? 'mobile';
+        $deviceName = $request->device_name ?? 'unknown';
+        $identity = $request->identity;
+        $identityName = $request->identity_name;
+
+        $username = $request->username;
 
         // Cari member by email, nik, no_karyawan, atau whatsapp
         $member = Member::where('email', $username)
@@ -51,6 +57,27 @@ class AuthController extends Controller
             throw ValidationException::withMessages([
                 'username' => ['Akun Anda tidak aktif. Hubungi admin.'],
             ]);
+        }
+
+        // Cek device identity (jika identity dikirim dari request)
+        if ($identity) {
+            // Jika member sudah punya identity dan berbeda dengan yang dikirim
+            if ($member->identity && $member->identity !== $identity) {
+                throw ValidationException::withMessages([
+                    'identity' => [
+                        "Akun Anda sudah terdaftar di perangkat \"{$member->identity_name}\". Silahkan login menggunakan perangkat tersebut atau hubungi admin untuk reset perangkat."
+                    ],
+                ]);
+            }
+
+            // Jika member belum punya identity, simpan identity baru
+            if (!$member->identity) {
+                $member->update([
+                    'identity' => $identity,
+                    'identity_name' => $identityName,
+                    'device_name' => $deviceName,
+                ]);
+            }
         }
 
         // Revoke token lama (optional, biar cuma 1 device)
