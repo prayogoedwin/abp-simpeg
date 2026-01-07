@@ -11,8 +11,8 @@ use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Section;
 use Filament\Actions\Action;
 use Livewire\Attributes\Url;
 
