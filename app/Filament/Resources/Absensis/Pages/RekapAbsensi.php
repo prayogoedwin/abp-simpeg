@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\MemberResource\Pages;
+namespace App\Filament\Resources\Absensis\Pages;
 
 use App\Filament\Resources\MemberResource;
 use App\Models\Member;
