@@ -166,8 +166,8 @@ class MemberResource extends Resource
                                     ->preload(),
 
                                 Select::make('posisi_id')
-                                    ->label('Jenis Pegawai')
-                                    ->relationship('jenis_pegawai', 'nama')
+                                    ->label('Posisi')
+                                    ->relationship('posisi', 'nama')
                                     ->searchable()
                                     ->preload(),
 
