@@ -39,7 +39,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MembersExport;
 use App\Exports\MembersTemplateExport;
 use App\Imports\MembersImport;
-use App\Filament\Resources\MemberResource\Actions\RekapAbsensiAction;
+use App\Filament\Resources\MemberResource\Pages\RekapAbsensi;
 
 class MemberResource extends Resource
 {
@@ -524,7 +524,9 @@ class MemberResource extends Resource
             'index' => ListMembers::route('/'),
             'create' => CreateMember::route('/create'),
             'edit' => EditMember::route('/{record}/edit'),
+            // 'rekap' => \App\Filament\Resources\MemberResource\Pages\RekapAbsensi::route('/{record}/rekap'),
             'rekap' => RekapAbsensi::route('/{record}/rekap'),
+            
         ];
     }
 
