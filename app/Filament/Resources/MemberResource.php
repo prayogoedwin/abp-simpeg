@@ -524,7 +524,7 @@ class MemberResource extends Resource
             'index' => ListMembers::route('/'),
             'create' => CreateMember::route('/create'),
             'edit' => EditMember::route('/{record}/edit'),
-            'rekap' => \App\Filament\Resources\MemberResource\Pages\RekapAbsensi::route('/{record}/rekap'),
+            'rekap' => RekapAbsensi::route('/{record}/rekap'),
         ];
     }
 
