@@ -39,6 +39,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MembersExport;
 use App\Exports\MembersTemplateExport;
 use App\Imports\MembersImport;
+use App\Filament\Resources\MemberResource\Actions\RekapAbsensiAction;
 
 class MemberResource extends Resource
 {
@@ -468,6 +469,7 @@ class MemberResource extends Resource
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
+                    RekapAbsensiAction::make(),
                     TableAction::make('resetDevice')
                         ->label('Reset Device')
                         ->icon('heroicon-o-device-phone-mobile')
