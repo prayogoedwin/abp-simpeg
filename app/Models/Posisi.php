@@ -36,15 +36,15 @@ class Posisi extends Model
             ->setDescriptionForEvent(fn(string $eventName) => "Posisi {$eventName}");
     }
 
-    public function members(): HasMany
-    {
-        return $this->hasMany(Member::class, 'posisi_id');
-    }
+    // public function members(): HasMany
+    // {
+    //     return $this->hasMany(Member::class, 'posisi_id');
+    // }
 
-    public function pegawais(): HasMany
-    {
-        return $this->members();
-    }
+    // public function pegawais(): HasMany
+    // {
+    //     return $this->members();
+    // }
 
     public function scopeAktif($query)
     {

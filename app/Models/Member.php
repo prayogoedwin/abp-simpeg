@@ -115,9 +115,14 @@ class Member extends Model implements Authenticatable
         return $this->belongsTo(Instansi::class, 'instansi_id');
     }
 
-    public function posisi(): BelongsTo
+    // public function posisi(): BelongsTo
+    // {
+    //     return $this->belongsTo(Posisi::class, 'posisi_id');
+    // }
+
+    public function jenis_pegawai(): BelongsTo
     {
-        return $this->belongsTo(Posisi::class, 'posisi_id');
+        return $this->belongsTo(JenisPegawai::class, 'posisi_id');
     }
 
     // ==================== SCOPES ====================

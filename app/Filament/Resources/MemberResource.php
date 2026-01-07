@@ -166,8 +166,8 @@ class MemberResource extends Resource
                                     ->preload(),
 
                                 Select::make('posisi_id')
-                                    ->label('Posisi')
-                                    ->relationship('posisi', 'nama')
+                                    ->label('Jenis Pegawai')
+                                    ->relationship('jenis_pegawai', 'nama')
                                     ->searchable()
                                     ->preload(),
 
@@ -260,8 +260,8 @@ class MemberResource extends Resource
                     ->sortable()
                     ->toggleable(),
 
-                TextColumn::make('posisi.nama')
-                    ->label('Posisi')
+                TextColumn::make('jenis_pegawais.nama')
+                    ->label('Jenis Pegawai')
                     ->badge()
                     ->color('info'),
 
