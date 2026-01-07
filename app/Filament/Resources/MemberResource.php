@@ -260,8 +260,8 @@ class MemberResource extends Resource
                     ->sortable()
                     ->toggleable(),
 
-                TextColumn::make('jenis_pegawais.nama')
-                    ->label('Jenis Pegawai')
+                TextColumn::make('posisi.nama')
+                    ->label('Posisi')
                     ->badge()
                     ->color('info'),
 
