@@ -42,6 +42,41 @@ class PosisiResource extends Resource
 
     // protected static bool $shouldRegisterNavigation = false;
 
+     public static function canAccess(): bool
+    {
+        return auth()->check() && auth()->user()->can('view posisis');
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->check() && auth()->user()->can('view posisis');
+    }
+
+    public static function canView(Model $record): bool
+    {
+        return auth()->check() && auth()->user()->can('view posisis');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->check() && auth()->user()->can('create posisis');
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->check() && auth()->user()->can('edit posisis');
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->check() && auth()->user()->can('delete posisis');
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return auth()->check() && auth()->user()->can('delete posisis');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema

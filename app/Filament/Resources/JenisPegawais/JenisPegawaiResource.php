@@ -39,6 +39,8 @@ class JenisPegawaiResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Jenis Pegawai';
 
+    // protected static bool $shouldRegisterNavigation = false;
+
     public static function canAccess(): bool
     {
         return auth()->check() && auth()->user()->can('view jenis_pegawai');
