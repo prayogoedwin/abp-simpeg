@@ -7,6 +7,7 @@ use App\Models\Member;
 use App\Models\Absensi;
 use Carbon\Carbon;
 use Filament\Resources\Pages\Page;
+use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
@@ -18,12 +19,11 @@ use Livewire\Attributes\Url;
 class RekapAbsensi extends Page implements HasForms
 {
     use InteractsWithForms;
+    use InteractsWithRecord;
 
     protected static string $resource = MemberResource::class;
 
     protected static ?string $title = 'Rekap Absensi';
-
-    public Member $record;
 
     #[Url]
     public ?int $bulan = null;
@@ -44,7 +44,7 @@ class RekapAbsensi extends Page implements HasForms
 
     public function mount(int | string $record): void
     {
-        $this->record = Member::findOrFail($record);
+        $this->record = $this->resolveRecord($record);
 
         $this->bulan = $this->bulan ?? now()->month;
         $this->tahun = $this->tahun ?? now()->year;
