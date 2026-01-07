@@ -1,0 +1,158 @@
+<?php
+
+namespace App\Filament\Resources\MemberResource\Pages;
+
+use App\Filament\Resources\MemberResource;
+use App\Models\Member;
+use App\Models\Absensi;
+use Carbon\Carbon;
+use Filament\Resources\Pages\Page;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
+use Filament\Infolists\Concerns\InteractsWithInfolists;
+use Filament\Infolists\Contracts\HasInfolists;
+use Filament\Actions\Action;
+use Livewire\Attributes\Url;
+
+class RekapAbsensi extends Page implements HasForms
+{
+    use InteractsWithForms;
+
+    protected static string $resource = MemberResource::class;
+
+    protected static string $view = 'filament.resources.member.pages.rekap-absensi';
+
+    protected static ?string $title = 'Rekap Absensi';
+
+    public Member $record;
+
+    #[Url]
+    public ?int $bulan = null;
+
+    #[Url]
+    public ?int $tahun = null;
+
+    public ?array $filterData = [];
+
+    public array $rekap = [];
+    public array $summary = [];
+    public array $periode = [];
+
+    public function mount(int | string $record): void
+    {
+        $this->record = Member::findOrFail($record);
+
+        $this->bulan = $this->bulan ?? now()->month;
+        $this->tahun = $this->tahun ?? now()->year;
+
+        $this->filterData = [
+            'bulan' => $this->bulan,
+            'tahun' => $this->tahun,
+        ];
+
+        $this->loadRekap();
+    }
+
+    public function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Section::make('Filter Periode')
+                    ->schema([
+                        Select::make('bulan')
+                            ->label('Bulan')
+                            ->options([
+                                1 => 'Januari',
+                                2 => 'Februari',
+                                3 => 'Maret',
+                                4 => 'April',
+                                5 => 'Mei',
+                                6 => 'Juni',
+                                7 => 'Juli',
+                                8 => 'Agustus',
+                                9 => 'September',
+                                10 => 'Oktober',
+                                11 => 'November',
+                                12 => 'Desember',
+                            ])
+                            ->required()
+                            ->native(false)
+                            ->live()
+                            ->afterStateUpdated(fn () => $this->applyFilter()),
+
+                        Select::make('tahun')
+                            ->label('Tahun')
+                            ->options(function () {
+                                $years = [];
+                                $currentYear = now()->year;
+                                for ($i = $currentYear - 2; $i <= $currentYear + 1; $i++) {
+                                    $years[$i] = (string) $i;
+                                }
+                                return $years;
+                            })
+                            ->required()
+                            ->native(false)
+                            ->live()
+                            ->afterStateUpdated(fn () => $this->applyFilter()),
+                    ])
+                    ->columns(2)
+                    ->compact(),
+            ])
+            ->statePath('filterData');
+    }
+
+    public function applyFilter(): void
+    {
+        $this->bulan = $this->filterData['bulan'];
+        $this->tahun = $this->filterData['tahun'];
+        $this->loadRekap();
+    }
+
+    protected function loadRekap(): void
+    {
+        $this->rekap = Absensi::getRekapBulanan($this->record->id, $this->bulan, $this->tahun);
+        $this->summary = Absensi::getSummaryBulanan($this->record->id, $this->bulan, $this->tahun);
+        
+        $this->periode = [
+            'bulan' => $this->bulan,
+            'bulan_nama' => Carbon::create($this->tahun, $this->bulan, 1)->translatedFormat('F'),
+            'tahun' => $this->tahun,
+        ];
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('back')
+                ->label('Kembali')
+                ->icon('heroicon-o-arrow-left')
+                ->url(MemberResource::getUrl('index'))
+                ->color('gray'),
+
+            Action::make('export')
+                ->label('Export PDF')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('success')
+                ->action(function () {
+                    // TODO: Implement PDF export
+                }),
+        ];
+    }
+
+    public function getTitle(): string
+    {
+        return "Rekap Absensi - {$this->record->name}";
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            MemberResource::getUrl() => 'Pegawai',
+            '#' => $this->record->name,
+            '' => 'Rekap Absensi',
+        ];
+    }
+}

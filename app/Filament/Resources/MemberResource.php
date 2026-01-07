@@ -469,7 +469,13 @@ class MemberResource extends Resource
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
-                    RekapAbsensiAction::make(),
+                    
+                    TableAction::make('rekapAbsensi')
+                        ->label('Rekap')
+                        ->icon('heroicon-o-calendar-days')
+                        ->color('info')
+                        ->url(fn (Member $record): string => static::getUrl('rekap', ['record' => $record])),
+
                     TableAction::make('resetDevice')
                         ->label('Reset Device')
                         ->icon('heroicon-o-device-phone-mobile')
@@ -518,6 +524,7 @@ class MemberResource extends Resource
             'index' => ListMembers::route('/'),
             'create' => CreateMember::route('/create'),
             'edit' => EditMember::route('/{record}/edit'),
+            'rekap' => \App\Filament\Resources\MemberResource\Pages\RekapAbsensi::route('/{record}/rekap'),
         ];
     }
 
