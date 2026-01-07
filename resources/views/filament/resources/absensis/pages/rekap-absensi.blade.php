@@ -1,134 +1,125 @@
 <x-filament-panels::page>
-    <form wire:submit.prevent="">
+    {{-- Filter Form --}}
+    <form wire:submit="submit">
         {{ $this->form }}
+        
+        <div style="margin-top: 1rem;">
+            <x-filament::button type="submit" icon="heroicon-o-magnifying-glass">
+                Tampilkan Rekap
+            </x-filament::button>
+        </div>
     </form>
 
-    {{-- List Pegawai --}}
-    @if($this->instansi_id && !$this->member_id)
-        <x-filament::section>
-            <x-slot name="heading">Daftar Pegawai</x-slot>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                @forelse($this->members as $member)
-                    <div 
-                        wire:click="$set('member_id', {{ $member['id'] }})"
-                        class="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:border-primary-500 hover:shadow-md transition"
-                    >
-                        <div class="font-semibold text-gray-900 dark:text-white">{{ $member['name'] }}</div>
-                        <div class="text-sm text-gray-500">{{ $member['no_karyawan'] ?? '-' }}</div>
-                    </div>
-                @empty
-                    <div class="col-span-full text-center text-gray-500 py-8">
-                        Tidak ada pegawai di instansi ini
-                    </div>
-                @endforelse
+    @if($showData)
+        {{-- Info Periode --}}
+        <div style="margin-top: 1.5rem; margin-bottom: 1rem; padding: 1rem; background: rgba(79, 70, 229, 0.1); border-radius: 0.5rem;">
+            <div style="font-size: 1.125rem; font-weight: 600; color: #4F46E5;">
+                {{ $periode['instansi'] ?? '-' }}
             </div>
-        </x-filament::section>
-    @endif
-
-    {{-- Rekap Absensi --}}
-    @if($this->member_id && count($this->rekapData) > 0)
-        {{-- Info Pegawai --}}
-        <x-filament::section>
-            <x-slot name="heading">Informasi Pegawai</x-slot>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                    <div class="text-sm text-gray-500">Nama</div>
-                    <div class="font-semibold">{{ $this->selectedMember?->name }}</div>
-                </div>
-                <div>
-                    <div class="text-sm text-gray-500">No. Karyawan</div>
-                    <div class="font-semibold">{{ $this->selectedMember?->no_karyawan ?? '-' }}</div>
-                </div>
-                <div>
-                    <div class="text-sm text-gray-500">Instansi</div>
-                    <div class="font-semibold">{{ $this->selectedMember?->instansi?->nama ?? '-' }}</div>
-                </div>
-                <div>
-                    <div class="text-sm text-gray-500">Periode</div>
-                    <div class="font-semibold">
-                        {{ DateTime::createFromFormat('!m', $this->bulan)->format('F') }} {{ $this->tahun }}
-                    </div>
-                </div>
+            <div style="font-size: 0.875rem; color: #6b7280;">
+                Periode: {{ $periode['bulan_nama'] }} {{ $periode['tahun'] }}
             </div>
-        </x-filament::section>
+        </div>
 
-        {{-- Summary --}}
+        {{-- Rekap Table --}}
         <x-filament::section>
-            <x-slot name="heading">Ringkasan</x-slot>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-                <div class="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                    <div class="text-2xl font-bold text-green-600">{{ $this->summaryData['total_hadir'] ?? 0 }}</div>
-                    <div class="text-sm text-gray-500">Hadir</div>
-                </div>
-                <div class="text-center p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                    <div class="text-2xl font-bold text-yellow-600">{{ $this->summaryData['total_terlambat'] ?? 0 }}</div>
-                    <div class="text-sm text-gray-500">Terlambat</div>
-                </div>
-                <div class="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                    <div class="text-2xl font-bold text-red-600">{{ $this->summaryData['total_alpha'] ?? 0 }}</div>
-                    <div class="text-sm text-gray-500">Alpha</div>
-                </div>
-                <div class="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                    <div class="text-2xl font-bold text-orange-600">{{ $this->summaryData['total_izin'] ?? 0 }}</div>
-                    <div class="text-sm text-gray-500">Izin</div>
-                </div>
-                <div class="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                    <div class="text-2xl font-bold text-blue-600">{{ $this->summaryData['total_sakit'] ?? 0 }}</div>
-                    <div class="text-sm text-gray-500">Sakit</div>
-                </div>
-                <div class="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                    <div class="text-2xl font-bold text-purple-600">{{ $this->summaryData['total_cuti'] ?? 0 }}</div>
-                    <div class="text-sm text-gray-500">Cuti</div>
-                </div>
-                <div class="text-center p-3 bg-gray-50 dark:bg-gray-900/20 rounded-lg">
-                    <div class="text-2xl font-bold text-gray-600">{{ $this->summaryData['total_libur'] ?? 0 }}</div>
-                    <div class="text-sm text-gray-500">Libur</div>
-                </div>
-            </div>
-        </x-filament::section>
+            <x-slot name="heading">
+                Rekap Kehadiran
+            </x-slot>
 
-        {{-- Tabel Rekap --}}
-        <x-filament::section>
-            <x-slot name="heading">Detail Absensi</x-slot>
-            
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead class="bg-gray-50 dark:bg-gray-800">
-                        <tr>
-                            <th class="px-4 py-3 text-left font-semibold">Tanggal</th>
-                            <th class="px-4 py-3 text-left font-semibold">Hari</th>
-                            <th class="px-4 py-3 text-center font-semibold">Jam Masuk</th>
-                            <th class="px-4 py-3 text-center font-semibold">Jam Pulang</th>
-                            <th class="px-4 py-3 text-center font-semibold">Status</th>
-                            <th class="px-4 py-3 text-left font-semibold">Keterangan</th>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.75rem; min-width: 1500px;">
+                    <thead>
+                        <tr style="background: #4F46E5;">
+                            <th style="padding: 0.5rem; text-align: left; color: white; font-weight: 600; position: sticky; left: 0; background: #4F46E5; z-index: 10; min-width: 150px;">
+                                Nama
+                            </th>
+                            @foreach($tanggalList as $tgl)
+                                <th style="padding: 0.5rem; text-align: center; color: white; font-weight: 600; min-width: 60px; {{ $tgl['is_weekend'] ? 'background: #6366f1;' : '' }}">
+                                    <div>{{ $tgl['tanggal'] }}</div>
+                                    <div style="font-size: 0.625rem; font-weight: 400;">{{ $tgl['hari'] }}</div>
+                                </th>
+                            @endforeach
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                        @foreach($this->rekapData as $row)
-                            <tr class="{{ $row['status_raw'] ? '' : 'bg-gray-50 dark:bg-gray-900/50' }}">
-                                <td class="px-4 py-3">{{ $row['tanggal']->format('d/m/Y') }}</td>
-                                <td class="px-4 py-3">{{ $row['hari'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $row['jam_masuk'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $row['jam_pulang'] }}</td>
-                                <td class="px-4 py-3 text-center">
-                                    @if($row['status_raw'])
-                                        <x-filament::badge 
-                                            :color="App\Models\Absensi::STATUS_COLORS[$row['status_raw']] ?? 'gray'"
-                                        >
-                                            {{ $row['status'] }}
-                                        </x-filament::badge>
-                                    @else
-                                        <span class="text-gray-400">-</span>
-                                    @endif
+                    <tbody>
+                        @forelse($rekapData as $row)
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <td style="padding: 0.5rem; white-space: nowrap; font-weight: 500; position: sticky; left: 0; background: #1f2937; z-index: 5;">
+                                    {{ $row['member']->name }}
                                 </td>
-                                <td class="px-4 py-3">{{ $row['keterangan'] }}</td>
+                                @foreach($tanggalList as $tgl)
+                                    @php
+                                        $absen = $row['absensi'][$tgl['tanggal']] ?? null;
+                                        $bgColor = 'transparent';
+                                        
+                                        if ($tgl['is_weekend']) {
+                                            $bgColor = 'rgba(107, 114, 128, 0.2)';
+                                        } elseif ($absen && $absen['status']) {
+                                            $bgColor = match($absen['status']) {
+                                                'hadir' => 'rgba(34, 197, 94, 0.15)',
+                                                'telat' => 'rgba(234, 179, 8, 0.15)',
+                                                'izin' => 'rgba(59, 130, 246, 0.15)',
+                                                'sakit' => 'rgba(168, 85, 247, 0.15)',
+                                                'alpha' => 'rgba(239, 68, 68, 0.15)',
+                                                default => 'transparent',
+                                            };
+                                        }
+                                    @endphp
+                                    <td style="padding: 0.25rem; text-align: center; background: {{ $bgColor }}; vertical-align: top;">
+                                        @if($absen && $absen['jam_masuk'])
+                                            <div style="font-size: 0.625rem; color: #22c55e;">{{ $absen['jam_masuk'] }}</div>
+                                            <div style="font-size: 0.625rem; color: #ef4444;">{{ $absen['jam_pulang'] }}</div>
+                                        @elseif($tgl['is_weekend'])
+                                            <div style="font-size: 0.625rem; color: #6b7280;">-</div>
+                                        @else
+                                            <div style="font-size: 0.625rem; color: #4b5563;">-</div>
+                                        @endif
+                                    </td>
+                                @endforeach
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="{{ count($tanggalList) + 1 }}" style="padding: 2rem; text-align: center; color: #6b7280;">
+                                    Tidak ada data pegawai di instansi ini
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            {{-- Legend --}}
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.75rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 1rem; height: 1rem; background: rgba(34, 197, 94, 0.3); border-radius: 0.25rem;"></div>
+                    <span style="color: #9ca3af;">Hadir</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 1rem; height: 1rem; background: rgba(234, 179, 8, 0.3); border-radius: 0.25rem;"></div>
+                    <span style="color: #9ca3af;">Telat</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 1rem; height: 1rem; background: rgba(59, 130, 246, 0.3); border-radius: 0.25rem;"></div>
+                    <span style="color: #9ca3af;">Izin</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 1rem; height: 1rem; background: rgba(168, 85, 247, 0.3); border-radius: 0.25rem;"></div>
+                    <span style="color: #9ca3af;">Sakit</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 1rem; height: 1rem; background: rgba(239, 68, 68, 0.3); border-radius: 0.25rem;"></div>
+                    <span style="color: #9ca3af;">Alpha</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 1rem; height: 1rem; background: rgba(107, 114, 128, 0.3); border-radius: 0.25rem;"></div>
+                    <span style="color: #9ca3af;">Weekend/Libur</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-left: auto;">
+                    <span style="color: #22c55e;">Hijau = Masuk</span>
+                    <span style="color: #9ca3af;">|</span>
+                    <span style="color: #ef4444;">Merah = Pulang</span>
+                </div>
             </div>
         </x-filament::section>
     @endif
