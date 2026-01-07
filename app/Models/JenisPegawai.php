@@ -25,10 +25,4 @@ class JenisPegawai extends Model
     {
         return $query->where('is_active', true);
     }
-
-     public function members(): HasMany
-    {
-        return $this->hasMany(Member::class, 'posisi_id');
-    }
-
 }
