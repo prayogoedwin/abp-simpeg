@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Filament\Resources\Posisis;
-
+use Illuminate\Database\Eloquent\Model;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Actions\EditAction;
@@ -44,7 +44,7 @@ class PosisiResource extends Resource
 
      public static function canAccess(): bool
     {
-        return auth()->check() && auth()->user()->can('view posisis');
+        return auth()->check() && auth()->user()->can('view posisi');
     }
 
     public static function canViewAny(): bool
