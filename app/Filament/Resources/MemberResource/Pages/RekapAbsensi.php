@@ -5,6 +5,7 @@ namespace App\Filament\Resources\MemberResource\Pages;
 use App\Filament\Resources\MemberResource;
 use App\Models\Member;
 use App\Models\Absensi;
+use App\Exports\RekapAbsensiExport;
 use Carbon\Carbon;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
@@ -15,6 +16,8 @@ use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Actions\Action;
 use Livewire\Attributes\Url;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class RekapAbsensi extends Page implements HasForms
 {
@@ -127,12 +130,51 @@ class RekapAbsensi extends Page implements HasForms
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('exportExcel')
+                ->label('Export Excel')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('success')
+                ->action(fn () => $this->exportExcel()),
+
+            Action::make('exportPdf')
+                ->label('Export PDF')
+                ->icon('heroicon-o-document-text')
+                ->color('danger')
+                ->action(fn () => $this->exportPdf()),
+
             Action::make('back')
                 ->label('Kembali')
                 ->icon('heroicon-o-arrow-left')
                 ->url(MemberResource::getUrl('index'))
                 ->color('gray'),
         ];
+    }
+
+    public function exportExcel()
+    {
+        $filename = 'rekap-absensi-' . str()->slug($this->record->name) . '-' . $this->bulan . '-' . $this->tahun . '.xlsx';
+        
+        return Excel::download(
+            new RekapAbsensiExport($this->record->id, $this->bulan, $this->tahun),
+            $filename
+        );
+    }
+
+    public function exportPdf()
+    {
+        $filename = 'rekap-absensi-' . str()->slug($this->record->name) . '-' . $this->bulan . '-' . $this->tahun . '.pdf';
+
+        $pdf = Pdf::loadView('exports.rekap-absensi-pdf', [
+            'member' => $this->record,
+            'rekap' => $this->rekap,
+            'summary' => $this->summary,
+            'periode' => $this->periode,
+        ])->setPaper('a4', 'portrait');
+
+        return response()->streamDownload(
+            fn () => print($pdf->output()),
+            $filename
+        );
     }
 
     public function getTitle(): string
