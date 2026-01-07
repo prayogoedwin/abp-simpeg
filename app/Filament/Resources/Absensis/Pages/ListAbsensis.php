@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Absensis\Pages;
 use App\Filament\Resources\Absensis\AbsensiResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Actions\Action;
 
 class ListAbsensis extends ListRecords
 {
