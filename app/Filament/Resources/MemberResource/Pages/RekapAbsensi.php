@@ -12,8 +12,6 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
-use Filament\Infolists\Concerns\InteractsWithInfolists;
-use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Actions\Action;
 use Livewire\Attributes\Url;
 
@@ -22,8 +20,6 @@ class RekapAbsensi extends Page implements HasForms
     use InteractsWithForms;
 
     protected static string $resource = MemberResource::class;
-
-    protected static string $view = 'filament.resources.member.pages.rekap-absensi';
 
     protected static ?string $title = 'Rekap Absensi';
 
@@ -40,6 +36,11 @@ class RekapAbsensi extends Page implements HasForms
     public array $rekap = [];
     public array $summary = [];
     public array $periode = [];
+
+    public function getView(): string
+    {
+        return 'filament.resources.member.pages.rekap-absensi';
+    }
 
     public function mount(int | string $record): void
     {
@@ -131,14 +132,6 @@ class RekapAbsensi extends Page implements HasForms
                 ->icon('heroicon-o-arrow-left')
                 ->url(MemberResource::getUrl('index'))
                 ->color('gray'),
-
-            Action::make('export')
-                ->label('Export PDF')
-                ->icon('heroicon-o-document-arrow-down')
-                ->color('success')
-                ->action(function () {
-                    // TODO: Implement PDF export
-                }),
         ];
     }
 
