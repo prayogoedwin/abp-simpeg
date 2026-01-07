@@ -49,32 +49,32 @@ class PosisiResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->check() && auth()->user()->can('view posisis');
+        return auth()->check() && auth()->user()->can('view posisi');
     }
 
     public static function canView(Model $record): bool
     {
-        return auth()->check() && auth()->user()->can('view posisis');
+        return auth()->check() && auth()->user()->can('view posisi');
     }
 
     public static function canCreate(): bool
     {
-        return auth()->check() && auth()->user()->can('create posisis');
+        return auth()->check() && auth()->user()->can('create posisi');
     }
 
     public static function canEdit(Model $record): bool
     {
-        return auth()->check() && auth()->user()->can('edit posisis');
+        return auth()->check() && auth()->user()->can('edit posisi');
     }
 
     public static function canDelete(Model $record): bool
     {
-        return auth()->check() && auth()->user()->can('delete posisis');
+        return auth()->check() && auth()->user()->can('delete posisi');
     }
 
     public static function canDeleteAny(): bool
     {
-        return auth()->check() && auth()->user()->can('delete posisis');
+        return auth()->check() && auth()->user()->can('delete posisi');
     }
 
     public static function form(Schema $schema): Schema
