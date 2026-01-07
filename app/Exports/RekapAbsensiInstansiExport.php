@@ -13,6 +13,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class RekapAbsensiInstansiExport implements FromArray, WithHeadings, WithTitle, WithStyles, WithEvents
 {
@@ -97,10 +98,14 @@ class RekapAbsensiInstansiExport implements FromArray, WithHeadings, WithTitle, 
                 // Style header
                 $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
                 
-                // Auto size columns
-                $lastColumn = $sheet->getHighestColumn();
-                foreach (range('A', $lastColumn) as $col) {
-                    $sheet->getColumnDimension($col)->setAutoSize(true);
+                // Get last column index (numeric)
+                $lastColumnIndex = count($this->tanggalList) + 1; // +1 for Nama column
+                $lastColumn = Coordinate::stringFromColumnIndex($lastColumnIndex);
+                
+                // Auto size columns using column index
+                for ($col = 1; $col <= $lastColumnIndex; $col++) {
+                    $colLetter = Coordinate::stringFromColumnIndex($col);
+                    $sheet->getColumnDimension($colLetter)->setAutoSize(true);
                 }
                 
                 // Border
@@ -113,7 +118,7 @@ class RekapAbsensiInstansiExport implements FromArray, WithHeadings, WithTitle, 
                     ],
                 ]);
                 
-                // Center alignment for data
+                // Center alignment for data (skip first column)
                 $sheet->getStyle('B6:' . $lastColumn . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             },
         ];
