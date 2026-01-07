@@ -6,18 +6,18 @@ use App\Filament\Resources\Absensis\AbsensiResource;
 use App\Models\Absensi;
 use App\Models\Member;
 use App\Models\Instansi;
-use App\Exports\RekapAbsensiExport;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Filament\Resources\Pages\Page;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Grid;
 use Filament\Actions\Action;
+use Livewire\Attributes\Url;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Livewire\Attributes\Computed;
-use Carbon\Carbon;
 
 class RekapAbsensi extends Page implements HasForms
 {
@@ -27,10 +27,21 @@ class RekapAbsensi extends Page implements HasForms
 
     protected static ?string $title = 'Rekap Absensi';
 
+    #[Url]
     public ?int $instansi_id = null;
-    public ?int $member_id = null;
+
+    #[Url]
     public ?int $bulan = null;
+
+    #[Url]
     public ?int $tahun = null;
+
+    public ?array $filterData = [];
+
+    public array $rekapData = [];
+    public array $tanggalList = [];
+    public array $periode = [];
+    public bool $showData = false;
 
     public function getView(): string
     {
@@ -39,142 +50,149 @@ class RekapAbsensi extends Page implements HasForms
 
     public function mount(): void
     {
-        $this->bulan = now()->month;
-        $this->tahun = now()->year;
+        $this->bulan = $this->bulan ?? now()->month;
+        $this->tahun = $this->tahun ?? now()->year;
+
+        $this->filterData = [
+            'instansi_id' => $this->instansi_id,
+            'bulan' => $this->bulan,
+            'tahun' => $this->tahun,
+        ];
+
+        if ($this->instansi_id) {
+            $this->loadRekap();
+        }
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Grid::make(4)
+        return $schema
+            ->components([
+                Section::make('Filter')
                     ->schema([
                         Select::make('instansi_id')
                             ->label('Instansi')
                             ->options(Instansi::query()->pluck('nama', 'id'))
                             ->searchable()
                             ->preload()
-                            ->live()
-                            ->afterStateUpdated(fn () => $this->member_id = null),
-
-                        Select::make('member_id')
-                            ->label('Pegawai')
-                            ->options(function () {
-                                $query = Member::query();
-                                if ($this->instansi_id) {
-                                    $query->where('instansi_id', $this->instansi_id);
-                                }
-                                return $query->pluck('name', 'id');
-                            })
-                            ->searchable()
-                            ->preload()
-                            ->live(),
+                            ->required()
+                            ->placeholder('Pilih Instansi'),
 
                         Select::make('bulan')
                             ->label('Bulan')
                             ->options([
-                                1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
-                                4 => 'April', 5 => 'Mei', 6 => 'Juni',
-                                7 => 'Juli', 8 => 'Agustus', 9 => 'September',
-                                10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+                                1 => 'Januari',
+                                2 => 'Februari',
+                                3 => 'Maret',
+                                4 => 'April',
+                                5 => 'Mei',
+                                6 => 'Juni',
+                                7 => 'Juli',
+                                8 => 'Agustus',
+                                9 => 'September',
+                                10 => 'Oktober',
+                                11 => 'November',
+                                12 => 'Desember',
                             ])
-                            ->default(now()->month)
-                            ->live(),
+                            ->required()
+                            ->native(false),
 
                         Select::make('tahun')
                             ->label('Tahun')
                             ->options(function () {
                                 $years = [];
-                                for ($i = now()->year - 2; $i <= now()->year + 1; $i++) {
-                                    $years[$i] = $i;
+                                $currentYear = now()->year;
+                                for ($i = $currentYear - 2; $i <= $currentYear + 1; $i++) {
+                                    $years[$i] = (string) $i;
                                 }
                                 return $years;
                             })
-                            ->default(now()->year)
-                            ->live(),
-                    ]),
-            ]);
+                            ->required()
+                            ->native(false),
+                    ])
+                    ->columns(3)
+                    ->compact(),
+            ])
+            ->statePath('filterData');
     }
 
-    #[Computed]
-    public function members(): array
+    public function submit(): void
+    {
+        $this->instansi_id = $this->filterData['instansi_id'];
+        $this->bulan = $this->filterData['bulan'];
+        $this->tahun = $this->filterData['tahun'];
+        
+        $this->loadRekap();
+    }
+
+    protected function loadRekap(): void
     {
         if (!$this->instansi_id) {
-            return [];
+            $this->showData = false;
+            return;
         }
 
-        return Member::where('instansi_id', $this->instansi_id)
+        // Generate list tanggal dalam bulan
+        $startDate = Carbon::create($this->tahun, $this->bulan, 1);
+        $endDate = $startDate->copy()->endOfMonth();
+        
+        $this->tanggalList = [];
+        $period = CarbonPeriod::create($startDate, $endDate);
+        
+        foreach ($period as $date) {
+            $this->tanggalList[] = [
+                'tanggal' => $date->day,
+                'hari' => $date->translatedFormat('D'),
+                'full_date' => $date->format('Y-m-d'),
+                'is_weekend' => $date->isWeekend(),
+            ];
+        }
+
+        // Ambil semua member di instansi
+        $members = Member::where('instansi_id', $this->instansi_id)
+            ->where('status_kepegawaian', 'aktif')
             ->orderBy('name')
+            ->get();
+
+        // Ambil semua absensi dalam periode
+        $absensis = Absensi::where('instansi_id', $this->instansi_id)
+            ->whereBetween('tanggal', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
             ->get()
-            ->toArray();
-    }
+            ->groupBy('member_id');
 
-    #[Computed]
-    public function selectedMember(): ?Member
-    {
-        if (!$this->member_id) {
-            return null;
+        $this->rekapData = [];
+
+        foreach ($members as $member) {
+            $memberAbsensi = $absensis->get($member->id, collect());
+            $absensiByDate = $memberAbsensi->keyBy(fn ($a) => Carbon::parse($a->tanggal)->format('Y-m-d'));
+
+            $row = [
+                'member' => $member,
+                'absensi' => [],
+            ];
+
+            foreach ($this->tanggalList as $tgl) {
+                $absen = $absensiByDate->get($tgl['full_date']);
+                
+                $row['absensi'][$tgl['tanggal']] = [
+                    'jam_masuk' => $absen ? ($absen->jam_masuk ? Carbon::parse($absen->jam_masuk)->format('H:i') : '-') : null,
+                    'jam_pulang' => $absen ? ($absen->jam_pulang ? Carbon::parse($absen->jam_pulang)->format('H:i') : '-') : null,
+                    'status' => $absen?->status,
+                    'is_weekend' => $tgl['is_weekend'],
+                ];
+            }
+
+            $this->rekapData[] = $row;
         }
 
-        return Member::with('instansi')->find($this->member_id);
-    }
-
-    #[Computed]
-    public function rekapData(): array
-    {
-        if (!$this->member_id || !$this->bulan || !$this->tahun) {
-            return [];
-        }
-
-        return Absensi::getRekapBulanan($this->member_id, $this->bulan, $this->tahun);
-    }
-
-    #[Computed]
-    public function summaryData(): array
-    {
-        if (!$this->member_id || !$this->bulan || !$this->tahun) {
-            return [];
-        }
-
-        return Absensi::getSummaryBulanan($this->member_id, $this->bulan, $this->tahun);
-    }
-
-    public function exportExcel()
-    {
-        if (!$this->member_id) {
-            return;
-        }
-
-        $member = Member::find($this->member_id);
-        $filename = "rekap_absensi_{$member->name}_{$this->bulan}_{$this->tahun}.xlsx";
-
-        return Excel::download(
-            new RekapAbsensiExport($this->member_id, $this->bulan, $this->tahun),
-            $filename
-        );
-    }
-
-    public function exportPdf()
-    {
-        if (!$this->member_id) {
-            return;
-        }
-
-        $member = Member::with('instansi')->find($this->member_id);
-        $rekap = Absensi::getRekapBulanan($this->member_id, $this->bulan, $this->tahun);
-        $summary = Absensi::getSummaryBulanan($this->member_id, $this->bulan, $this->tahun);
-
-        $pdf = Pdf::loadView('exports.rekap-absensi-pdf', [
-            'member' => $member,
-            'rekap' => $rekap,
-            'summary' => $summary,
+        $this->periode = [
             'bulan' => $this->bulan,
+            'bulan_nama' => Carbon::create($this->tahun, $this->bulan, 1)->translatedFormat('F'),
             'tahun' => $this->tahun,
-        ]);
+            'instansi' => Instansi::find($this->instansi_id)?->nama,
+        ];
 
-        $filename = "rekap_absensi_{$member->name}_{$this->bulan}_{$this->tahun}.pdf";
-
-        return response()->streamDownload(fn () => print($pdf->output()), $filename);
+        $this->showData = true;
     }
 
     protected function getHeaderActions(): array
@@ -184,15 +202,50 @@ class RekapAbsensi extends Page implements HasForms
                 ->label('Export Excel')
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('success')
-                ->action('exportExcel')
-                ->visible(fn () => $this->member_id !== null),
+                ->visible(fn () => $this->showData)
+                ->action(fn () => $this->exportExcel()),
 
             Action::make('exportPdf')
                 ->label('Export PDF')
-                ->icon('heroicon-o-document')
+                ->icon('heroicon-o-document-text')
                 ->color('danger')
-                ->action('exportPdf')
-                ->visible(fn () => $this->member_id !== null),
+                ->visible(fn () => $this->showData)
+                ->action(fn () => $this->exportPdf()),
         ];
+    }
+
+    public function exportExcel()
+    {
+        $filename = 'rekap-absensi-' . str()->slug($this->periode['instansi'] ?? 'all') . '-' . $this->bulan . '-' . $this->tahun . '.xlsx';
+        
+        return Excel::download(
+            new \App\Exports\RekapAbsensiInstansiExport(
+                $this->rekapData,
+                $this->tanggalList,
+                $this->periode
+            ),
+            $filename
+        );
+    }
+
+    public function exportPdf()
+    {
+        $filename = 'rekap-absensi-' . str()->slug($this->periode['instansi'] ?? 'all') . '-' . $this->bulan . '-' . $this->tahun . '.pdf';
+
+        $pdf = Pdf::loadView('exports.rekap-absensi-instansi-pdf', [
+            'rekapData' => $this->rekapData,
+            'tanggalList' => $this->tanggalList,
+            'periode' => $this->periode,
+        ])->setPaper('a4', 'landscape');
+
+        return response()->streamDownload(
+            fn () => print($pdf->output()),
+            $filename
+        );
+    }
+
+    public function getTitle(): string
+    {
+        return "Rekap Absensi";
     }
 }

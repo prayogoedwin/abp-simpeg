@@ -13,6 +13,11 @@ class ListAbsensis extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+             Action::make('rekap')
+                ->label('Rekap Absensi')
+                ->icon('heroicon-o-table-cells')
+                ->color('info')
+                ->url(fn () => AbsensiResource::getUrl('rekap')),
             CreateAction::make(),
         ];
     }
