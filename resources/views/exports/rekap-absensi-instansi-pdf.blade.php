@@ -15,22 +15,22 @@
         }
         body {
             font-family: 'DejaVu Sans', Arial, sans-serif;
-            font-size: 8px;
+            font-size: 7px;
             color: #333;
         }
         .header {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             border-bottom: 2px solid #4F46E5;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
         }
         .header h1 {
-            font-size: 14px;
+            font-size: 12px;
             color: #4F46E5;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
         .header p {
-            font-size: 10px;
+            font-size: 9px;
             color: #666;
         }
         table {
@@ -40,27 +40,32 @@
         th {
             background: #4F46E5;
             color: white;
-            padding: 4px 2px;
+            padding: 3px 1px;
             text-align: center;
-            font-size: 7px;
+            font-size: 6px;
             font-weight: bold;
         }
         th.nama {
             text-align: left;
-            min-width: 100px;
+            min-width: 80px;
+            padding-left: 3px;
         }
         th.weekend {
             background: #6366f1;
         }
         td {
-            padding: 3px 2px;
+            padding: 2px 1px;
             text-align: center;
             border-bottom: 1px solid #eee;
-            font-size: 7px;
+            font-size: 6px;
         }
         td.nama {
             text-align: left;
             font-weight: 500;
+            padding-left: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 80px;
         }
         td.hadir { background: rgba(34, 197, 94, 0.15); }
         td.telat { background: rgba(234, 179, 8, 0.15); }
@@ -71,26 +76,10 @@
         .jam-masuk { color: #22c55e; }
         .jam-pulang { color: #ef4444; }
         .footer {
-            margin-top: 15px;
-            font-size: 8px;
+            margin-top: 10px;
+            font-size: 7px;
             color: #666;
             text-align: right;
-        }
-        .legend {
-            margin-top: 10px;
-            display: flex;
-            gap: 15px;
-            font-size: 7px;
-        }
-        .legend-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-        }
-        .legend-color {
-            width: 10px;
-            height: 10px;
-            border-radius: 2px;
         }
     </style>
 </head>
@@ -106,8 +95,7 @@
                 <th class="nama">Nama</th>
                 @foreach($tanggalList as $tgl)
                     <th class="{{ $tgl['is_weekend'] ? 'weekend' : '' }}">
-                        {{ $tgl['tanggal'] }}<br>
-                        <span style="font-weight: normal;">{{ $tgl['hari'] }}</span>
+                        {{ $tgl['tanggal'] }}
                     </th>
                 @endforeach
             </tr>
@@ -115,7 +103,7 @@
         <tbody>
             @foreach($rekapData as $row)
                 <tr>
-                    <td class="nama">{{ $row['member']->name }}</td>
+                    <td class="nama">{{ \Illuminate\Support\Str::limit($row['nama'], 15) }}</td>
                     @foreach($tanggalList as $tgl)
                         @php
                             $absen = $row['absensi'][$tgl['tanggal']] ?? null;
@@ -128,7 +116,7 @@
                             }
                         @endphp
                         <td class="{{ $cellClass }}">
-                            @if($absen && $absen['jam_masuk'])
+                            @if($absen && $absen['jam_masuk'] && $absen['jam_masuk'] !== '-')
                                 <span class="jam-masuk">{{ $absen['jam_masuk'] }}</span><br>
                                 <span class="jam-pulang">{{ $absen['jam_pulang'] }}</span>
                             @else
@@ -142,7 +130,7 @@
     </table>
 
     <div class="footer">
-        Dicetak pada: {{ now()->translatedFormat('d F Y H:i') }}
+        Dicetak: {{ now()->format('d/m/Y H:i') }}
     </div>
 </body>
 </html>

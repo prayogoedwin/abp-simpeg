@@ -230,10 +230,22 @@ class RekapAbsensi extends Page implements HasForms
 
     public function exportPdf()
     {
+        // Siapkan data ringan untuk PDF (tanpa object Eloquent)
+        $pdfData = [];
+        foreach ($this->rekapData as $row) {
+            $pdfData[] = [
+                'nama' => $row['member']->name,
+                'absensi' => $row['absensi'],
+            ];
+        }
+
         $filename = 'rekap-absensi-' . str()->slug($this->periode['instansi'] ?? 'all') . '-' . $this->bulan . '-' . $this->tahun . '.pdf';
 
+        // Increase memory limit temporarily
+        ini_set('memory_limit', '256M');
+
         $pdf = Pdf::loadView('exports.rekap-absensi-instansi-pdf', [
-            'rekapData' => $this->rekapData,
+            'rekapData' => $pdfData,
             'tanggalList' => $this->tanggalList,
             'periode' => $this->periode,
         ])->setPaper('a4', 'landscape');
