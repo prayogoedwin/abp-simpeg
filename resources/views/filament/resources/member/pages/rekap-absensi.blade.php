@@ -5,32 +5,32 @@
     {{-- Summary Cards --}}
     <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; margin-top: 1.5rem; margin-bottom: 1.5rem;">
         <div style="background: rgba(34, 197, 94, 0.1); border-radius: 0.75rem; padding: 1rem; text-align: center;">
-            <div style="font-size: 1.875rem; font-weight: 700; color: #22c55e;">{{ $summary['hadir'] ?? 0 }}</div>
+            <div style="font-size: 1.875rem; font-weight: 700; color: #22c55e;">{{ $summary['total_hadir'] ?? 0 }}</div>
             <div style="font-size: 0.875rem; color: #9ca3af; margin-top: 0.25rem;">Hadir</div>
         </div>
 
         <div style="background: rgba(234, 179, 8, 0.1); border-radius: 0.75rem; padding: 1rem; text-align: center;">
-            <div style="font-size: 1.875rem; font-weight: 700; color: #eab308;">{{ $summary['telat'] ?? 0 }}</div>
+            <div style="font-size: 1.875rem; font-weight: 700; color: #eab308;">{{ $summary['total_terlambat'] ?? 0 }}</div>
             <div style="font-size: 0.875rem; color: #9ca3af; margin-top: 0.25rem;">Telat</div>
         </div>
 
         <div style="background: rgba(59, 130, 246, 0.1); border-radius: 0.75rem; padding: 1rem; text-align: center;">
-            <div style="font-size: 1.875rem; font-weight: 700; color: #3b82f6;">{{ $summary['izin'] ?? 0 }}</div>
+            <div style="font-size: 1.875rem; font-weight: 700; color: #3b82f6;">{{ $summary['total_izin'] ?? 0 }}</div>
             <div style="font-size: 0.875rem; color: #9ca3af; margin-top: 0.25rem;">Izin</div>
         </div>
 
         <div style="background: rgba(168, 85, 247, 0.1); border-radius: 0.75rem; padding: 1rem; text-align: center;">
-            <div style="font-size: 1.875rem; font-weight: 700; color: #a855f7;">{{ $summary['sakit'] ?? 0 }}</div>
+            <div style="font-size: 1.875rem; font-weight: 700; color: #a855f7;">{{ $summary['total_izin'] ?? 0 }}</div>
             <div style="font-size: 0.875rem; color: #9ca3af; margin-top: 0.25rem;">Sakit</div>
         </div>
 
         <div style="background: rgba(239, 68, 68, 0.1); border-radius: 0.75rem; padding: 1rem; text-align: center;">
-            <div style="font-size: 1.875rem; font-weight: 700; color: #ef4444;">{{ $summary['alpha'] ?? 0 }}</div>
+            <div style="font-size: 1.875rem; font-weight: 700; color: #ef4444;">{{ $summary['total_alpha'] ?? 0 }}</div>
             <div style="font-size: 0.875rem; color: #9ca3af; margin-top: 0.25rem;">Alpha</div>
         </div>
 
         <div style="background: rgba(107, 114, 128, 0.1); border-radius: 0.75rem; padding: 1rem; text-align: center;">
-            <div style="font-size: 1.875rem; font-weight: 700; color: #6b7280;">{{ $summary['libur'] ?? 0 }}</div>
+            <div style="font-size: 1.875rem; font-weight: 700; color: #6b7280;">{{ $summary['total_libur'] ?? 0 }}</div>
             <div style="font-size: 0.875rem; color: #9ca3af; margin-top: 0.25rem;">Libur</div>
         </div>
     </div>

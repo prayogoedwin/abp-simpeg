@@ -17,6 +17,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             RolePermissionSeeder::class,
+            JenisPegawaiSeeder::class,
+            JamKerjaSeeder::class,
+            InstansiSeeder::class,
+            OutsourcingSeeder::class,
         ]);
 
         // Buat user Super Administrator
