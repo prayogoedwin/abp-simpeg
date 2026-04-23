@@ -9,9 +9,19 @@ class InstansiSeeder extends Seeder
 {
     public function run(): void
     {
+        // [
+        //     'nama' => 'Sekolah'
+        // ],
+        // [
+        //     'nama' => 'Rumah Sakit'
+        // ],
+        // [
+        //     'nama' => 'Perkantoran'
+        // ],
         $instansis = [
             [
                 'nama' => 'SEKRETARIAT DPRD PATI',
+                'jenis_instansi_id' => 3,
                 'kode' => 'SEKRETARIAT-DPRD-PATI',
                 'alamat' => 'Jl. DR. Wahidin No.2A, Kaborongan, Pati Lor, Kec. Pati, Kabupaten Pati',
                 'lat' => -6.7525264,
@@ -20,6 +30,7 @@ class InstansiSeeder extends Seeder
             ],
             [
                 'nama' => 'BAPPERIDA PATI',
+                'jenis_instansi_id' => 3,
                 'kode' => 'BAPPERIDA-PATI',
                 'alamat' => 'Jl. Kudus - Pati No.KM.4, Sawah, Margorejo, Kec. Pati, Kabupaten Pati',
                 'lat' => -6.7832521,
@@ -28,6 +39,7 @@ class InstansiSeeder extends Seeder
             ],
             [
                 'nama' => 'SETDA PATI',
+                'jenis_instansi_id' => 3,
                 'kode' => 'SETDA-PATI',
                 'alamat' => 'Jl. Tombronegoro No.1, Kaborongan, Pati Lor, Kec. Pati',
                 'lat' => -6.7523826,
@@ -36,6 +48,7 @@ class InstansiSeeder extends Seeder
             ],
             [
                 'nama' => 'BKPP PATI',
+                'jenis_instansi_id' => 3,
                 'kode' => 'BKPP-PATI',
                 'alamat' => 'Jl. Kudus - Pati No.KM.4, Sawah, Margorejo, Kec. Pati, Kabupaten Pati, Jawa Tengah 59163',
                 'lat' => -6.7624626,
@@ -44,6 +57,7 @@ class InstansiSeeder extends Seeder
             ],
             [
                 'nama' => 'INSPEKTORAT PATI',
+                'jenis_instansi_id' => 3,
                 'kode' => 'INSPEKTORAT-PATI',
                 'alamat' => 'Jl. Dr. Setia Budi No.34A, Pati Wetan/Dosoman, Pati Wetan, Kec. Pati, Kabupaten Pati',
                 'lat' => -6.7554054,
@@ -52,6 +66,7 @@ class InstansiSeeder extends Seeder
             ],
             [
                 'nama' => 'BPKAD PATI',
+                'jenis_instansi_id' => 3,
                 'kode' => 'BPKAD-PATI',
                 'alamat' => 'Jalan Dokter Setia Budi, Pati Kidul, Pati, Pati Wetan/Dosoman, Pati Wetan, Kec. Pati, Kabupaten Pati',
                 'lat' => -6.755376,
@@ -60,6 +75,7 @@ class InstansiSeeder extends Seeder
             ],
             [
                 'nama' => 'DISTRAN PATI',
+                'jenis_instansi_id' => 3,
                 'kode' => 'DISTRAN-PATI',
                 'alamat' => 'Jl. Jenderal Sudirman No.70, Pati Kidul, Kec. Pati, Kabupaten Pati',
                 'lat' => -6.7516111,
@@ -68,6 +84,7 @@ class InstansiSeeder extends Seeder
             ],
             [
                 'nama' => 'DINSOS PATI',
+                'jenis_instansi_id' => 3,
                 'kode' => 'DINSOS-PATI',
                 'alamat' => 'Jl. Ki Juru Mertani No.59117, RW.01, Cengkok, Sidoharjo, Kec. Pati, Kabupaten Pati',
                 'lat' => -6.7536011,
@@ -76,6 +93,7 @@ class InstansiSeeder extends Seeder
             ],
             [
                 'nama' => 'RSUD KARTINI JEPARA',
+                'jenis_instansi_id' => 2,
                 'kode' => 'RSUD-KARTINI-JEPARA',
                 'alamat' => 'Jl. Ki Juru Mertani No.59117, RW.01, Cengkok, Sidoharjo, Kec. Pati, Kabupaten Pati',
                 'lat' => -6.60574940,

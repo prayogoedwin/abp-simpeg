@@ -17,6 +17,7 @@ class Instansi extends Model
 
     protected $fillable = [
         'nama',
+        'jenis_instansi_id',
         'kode',
         'alamat',
         'lat',
@@ -54,6 +55,11 @@ class Instansi extends Model
     public function pegawais(): HasMany
     {
         return $this->members();
+    }
+
+    public function jenisInstansi()
+    {
+        return $this->belongsTo(JenisInstansi::class, 'jenis_instansi_id');
     }
 
     // ==================== SCOPES ====================

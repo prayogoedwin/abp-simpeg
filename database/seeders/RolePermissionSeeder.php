@@ -21,7 +21,10 @@ class RolePermissionSeeder extends Seeder
             'view faqs', 'create faqs', 'edit faqs', 'delete faqs',
             'view informasis', 'create informasis', 'edit informasis', 'delete informasis',
             'view beritas', 'create beritas', 'edit beritas', 'delete beritas',
-            'view kategoris', 'create kategoris', 'edit kategoris', 'delete kategoris',   
+            'view kategoris', 'create kategoris', 'edit kategoris', 'delete kategoris',  
+            
+            'view instansis', 'create instansis', 'edit instansis', 'delete instansis',
+            'view posisis', 'create posisis', 'edit posisis', 'delete posisis',
         
         ];
         foreach ($permissions as $perm) {

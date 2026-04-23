@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             JenisPegawaiSeeder::class,
             JamKerjaSeeder::class,
+            JenisInstansiSeeder::class,
             InstansiSeeder::class,
             OutsourcingSeeder::class,
         ]);

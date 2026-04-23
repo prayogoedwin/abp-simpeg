@@ -19,6 +19,8 @@ use App\Filament\Resources\Instansis\Pages\CreateInstansi;
 use App\Filament\Resources\Instansis\Pages\EditInstansi;
 use App\Filament\Resources\Instansis\Pages\ViewInstansi;
 use App\Models\Instansi;
+use App\Models\JenisInstansi;
+use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
@@ -89,6 +91,13 @@ class InstansiResource extends Resource
                         TextInput::make('nama')
                             ->required()
                             ->maxLength(255),
+
+                        Select::make('jenis_instansi_id')
+                            ->label('Jenis Instansi')
+                            ->options(JenisInstansi::query()->pluck('nama', 'id'))
+                            ->searchable()
+                            ->preload(),
+                            
 
                         TextInput::make('kode')
                             ->unique(ignoreRecord: true)
@@ -171,6 +180,12 @@ class InstansiResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('nama')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('jenis_instansi_id')
+                    ->label('Jenis Instansi')
+                    ->getStateUsing(fn ($record) => $record->jenisInstansi?->nama)
                     ->searchable()
                     ->sortable(),
 
