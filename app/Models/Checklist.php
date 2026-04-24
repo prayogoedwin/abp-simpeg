@@ -10,7 +10,7 @@ class Checklist extends Model
         'instansi_id',
     ];
 
-    public function checklistdetails()
+    public function details()
     {
         return $this->hasMany(ChecklistDetail::class);
     }

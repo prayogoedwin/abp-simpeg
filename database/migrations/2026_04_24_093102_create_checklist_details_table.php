@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('type'); // text, number, date, select, checkbox, radio
             $table->string('label');
             $table->string('value')->nullable();
+            $table->text('options')->nullable(); // array for select, checkbox, radio
 
             $table->timestamps();
         });
