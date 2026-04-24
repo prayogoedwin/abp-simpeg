@@ -15,7 +15,7 @@ use App\Http\Controllers\Member\PrediksiMember;
 use App\Http\Controllers\Member\DashboardMember;
 
 use App\Http\Controllers\CacheController;
-
+use App\Http\Controllers\ChecklistController;
 use App\Middleware\CheckMaintenanceMode;
 
 
@@ -92,6 +92,15 @@ Route::prefix('member')->group(function() {
 
  
 });
+
+
+
+
+
+Route::get('/checklist', [ChecklistController::class, 'index'])->name('checklist.index');
+Route::post('/checklist/inputdata', [ChecklistController::class, 'inputdata'])->name('checklist.inputdata');
+Route::post('/checklist/submit', [ChecklistController::class, 'submit'])->name('checklist.submit');
+
 
 // Route::get('/member/profile', [ProfileController::class, 'index'])
 //   ->middleware('auth:member');

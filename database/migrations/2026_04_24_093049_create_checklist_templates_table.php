@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('checklist_templates', function (Blueprint $table) {
             $table->id();
             $table->foreignId('instansi_id')->constrained()->onDelete('cascade');
+            $table->string('name');
             $table->timestamps();
         });
     }

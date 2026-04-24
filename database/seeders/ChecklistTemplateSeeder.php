@@ -12,6 +12,37 @@ class ChecklistTemplateSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $data = [
+            [
+                'instansi_id' => 1,
+                'name' => 'Template Checklist Cleaning Service Instansi 1',
+            ],
+            [
+                'instansi_id' => 1,
+                'name' => 'Template Checklist Satpam Instansi 1',
+            ],
+            [
+                'instansi_id' => 1,
+                'name' => 'Template Checklist Office Boy (OB) Instansi 1',
+            ],
+            [
+                'instansi_id' => 2,
+                'name' => 'Template Checklist Cleaning Service Instansi 2',
+            ],
+            [
+                'instansi_id' => 2,
+                'name' => 'Template Checklist Satpam Instansi 2',
+            ],
+            [
+                'instansi_id' => 2,
+                'name' => 'Template Checklist Office Boy (OB) Instansi 2',
+            ]
+
+
+        ];
+
+        foreach ($data as $item) {
+            \App\Models\ChecklistTemplate::create($item);
+        }
     }
 }

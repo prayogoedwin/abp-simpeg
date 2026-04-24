@@ -22,6 +22,9 @@ class DatabaseSeeder extends Seeder
             JenisInstansiSeeder::class,
             InstansiSeeder::class,
             OutsourcingSeeder::class,
+
+            ChecklistTemplateSeeder::class,
+            ChecklistTemplateDetailSeeder::class,
         ]);
 
         // Buat user Super Administrator
