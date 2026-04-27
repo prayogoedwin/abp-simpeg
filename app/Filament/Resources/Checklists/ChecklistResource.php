@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Checklists;
 use App\Filament\Resources\Checklists\Pages\CreateChecklist;
 use App\Filament\Resources\Checklists\Pages\EditChecklist;
 use App\Filament\Resources\Checklists\Pages\ListChecklists;
+use App\Filament\Resources\Checklists\Pages\RekapChecklist;
 use App\Filament\Resources\Checklists\Pages\ViewChecklist;
 use App\Filament\Resources\Checklists\Schemas\ChecklistForm;
 use App\Filament\Resources\Checklists\Schemas\ChecklistInfolist;
@@ -51,9 +52,7 @@ class ChecklistResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            
-        ];
+        return [];
     }
 
     public static function getPages(): array
@@ -61,6 +60,7 @@ class ChecklistResource extends Resource
         return [
             'index' => ListChecklists::route('/'),
             'create' => CreateChecklist::route('/create'),
+            'rekap' => RekapChecklist::route('/rekap'),
             'view' => ViewChecklist::route('/{record}'),
             'edit' => EditChecklist::route('/{record}/edit'),
         ];

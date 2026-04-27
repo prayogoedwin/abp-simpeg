@@ -50,21 +50,15 @@
                                 </td>
                                 @foreach($tanggalList as $tgl)
                                     @php
-                                        $absen = $row['absensi'][$tgl['tanggal']] ?? null;
+                                        $checklist = $row['checklist'][$tgl['tanggal']] ?? null;
                                         $bgColor = 'transparent';
                                         
                                         if ($tgl['is_weekend']) {
                                             $bgColor = 'rgba(107, 114, 128, 0.2)';
-                                        } elseif ($absen && $absen['status']) {
-                                            $bgColor = match($absen['status']) {
-                                                'hadir' => 'rgba(34, 197, 94)',
-                                                'telat' => 'rgba(234, 179, 8)',
-                                                'izin' => 'rgba(59, 130, 246,)',
-                                                'sakit' => 'rgba(168, 85, 247)',
-                                                'alpha' => 'rgba(239, 68, 68)',
-                                                default => 'transparent',
-                                            };
+                                        } elseif ($checklist['isAny']) {
+                                            $bgColor = 'rgba(34, 197, 94)';
                                         }
+                                        
                                     @endphp
                                     <td style="padding: 0.25rem; text-align: center; background: {{ $bgColor }}; vertical-align: top;">
                                         
