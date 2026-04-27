@@ -50,13 +50,14 @@ class ChecklistController extends Controller
         // dd($request->all());
         $checklistTemplate = ChecklistTemplate::find($request->template_id);
 
+        // dd($checklistTemplate);
+
         $checklist = Checklist::create([
             'checklist_template_id' => $checklistTemplate->id,
             'instansi_id' => $checklistTemplate->instansi_id,
             'member_id' => auth()->user()->id,
         ]);
 
-        $test = [];
 
         foreach ($request->answers as $detailId => $answer) {
             
@@ -77,5 +78,11 @@ class ChecklistController extends Controller
         // dd($checklist->load('details'));
 
         return redirect()->route('checklist.success');
+    }
+
+
+    public function success()
+    {
+        return view('checklists.success');
     }
 }

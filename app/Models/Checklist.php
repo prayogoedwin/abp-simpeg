@@ -8,6 +8,8 @@ class Checklist extends Model
 {
     protected $fillable = [
         'instansi_id',
+        'member_id',
+        'checklist_template_id',
     ];
 
     public function details()
