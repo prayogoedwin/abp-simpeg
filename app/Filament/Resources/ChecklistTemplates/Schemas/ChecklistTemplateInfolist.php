@@ -45,6 +45,7 @@ class ChecklistTemplateInfolist
                 TextEntry::make('updated_at')
                     ->dateTime()
                     ->placeholder('-'),
-            ]);
+            ])
+            ->columns(1);
     }
 }

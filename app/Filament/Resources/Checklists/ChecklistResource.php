@@ -11,6 +11,7 @@ use App\Filament\Resources\Checklists\Schemas\ChecklistInfolist;
 use App\Filament\Resources\Checklists\Tables\ChecklistsTable;
 use App\Models\Checklist;
 use BackedEnum;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -51,7 +52,7 @@ class ChecklistResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\ChecklistdetailRelationManager::class,
+            
         ];
     }
 

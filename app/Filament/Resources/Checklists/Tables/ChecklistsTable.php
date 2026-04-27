@@ -15,8 +15,12 @@ class ChecklistsTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('template.name')
                     ->label('Nama Template')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('member.name')
+                    ->label('Nama Pegawai')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('instansi.nama')
@@ -25,8 +29,8 @@ class ChecklistsTable
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
+                    
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()

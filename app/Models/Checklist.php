@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Checklist extends Model
@@ -12,8 +13,55 @@ class Checklist extends Model
         'checklist_template_id',
     ];
 
+    public function instansi()
+    {
+        return $this->belongsTo(Instansi::class);
+    }
+
+    public function member()
+    {
+        return $this->belongsTo(Member::class);
+    }
+
+    public function template()
+    {
+        return $this->belongsTo(ChecklistTemplate::class, 'checklist_template_id');
+    }
+
     public function details()
     {
         return $this->hasMany(ChecklistDetail::class);
+    }
+
+    public static function getRekapBulanan(int $memberId, int $bulan, int $tahun): array
+    {
+        $startDate = Carbon::create($tahun, $bulan, 1)->startOfMonth();
+        $endDate = $startDate->copy()->endOfMonth();
+        
+        $checklists = self::where('member_id', $memberId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get()
+            ->keyBy(fn ($item) => $item->created_at->format('Y-m-d'));
+
+        $rekap = [];
+        $currentDate = $startDate->copy();
+
+        while ($currentDate <= $endDate) {
+            $dateKey = $currentDate->format('Y-m-d');
+            $checklist = $checklists->get($dateKey);
+
+            $rekap[] = [
+                'checklist_id' => $checklist?->id,
+                'tanggal' => $currentDate->copy(),
+                'hari' => $currentDate->translatedFormat('l'),
+                'nama_template' => $checklist?->template->name ?? '-',
+            ];
+
+            $currentDate->addDay();
+        }
+
+        
+
+        return $rekap;
     }
 }

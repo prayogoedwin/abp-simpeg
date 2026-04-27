@@ -61,7 +61,7 @@
                         $isAlpha = $statusRaw === 'alpha';
                         $bgColor = $isLibur ? 'rgba(107,114,128,0.1)' : ($isAlpha ? 'rgba(239,68,68,0.1)' : 'transparent');
                     @endphp
-                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); background: {{ $bgColor }};">
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); background: {{ $bgColor }}; ">
                         <td style="padding: 0.75rem 1rem; white-space: nowrap;">{{ $row['tanggal']->format('d/m/Y') }}</td>
                         <td style="padding: 0.75rem 1rem; white-space: nowrap; color: #9ca3af;">{{ $row['hari'] }}</td>
                         <td style="padding: 0.75rem 1rem; text-align: center; font-family: monospace;">

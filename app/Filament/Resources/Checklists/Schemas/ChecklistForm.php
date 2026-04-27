@@ -14,6 +14,12 @@ class ChecklistForm
     {
         return $schema
             ->schema([
+
+
+                TextInput::make('name')
+                    ->label('Nama Template')
+                    ->required(),
+
                 Select::make('instansi_id')
                     ->label('Instansi')
                     ->options(Instansi::query()->pluck('nama', 'id'))
@@ -46,7 +52,7 @@ class ChecklistForm
                             ->placeholder('e.g., Room Temperature'),
 
                         TextInput::make('options')
-                            ->label('Options (for select, checkbox, radio)')
+                            ->label('Options (pisahkan dengan koma)')
                             ->placeholder('Comma-separated options, e.g., "Low,Medium,High"')
                             ->visible(fn ($get) => in_array($get('type'), ['select', 'checkbox', 'radio'])),
                             
@@ -61,6 +67,7 @@ class ChecklistForm
                     ->defaultItems(1) // Starts with one row visible
             ])
             ->columns(1); // The main form has a single column layout
+            ;
             
     }
 }

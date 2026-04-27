@@ -10,41 +10,26 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\DissociateAction;
 use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class ChecklistdetailRelationManager extends RelationManager
+class ChecklistDetailRelationManager extends RelationManager
 {
-    protected static string $relationship = 'checklistdetail';
+    protected static string $relationship = 'ChecklistDetail';
 
     public function form(Schema $schema): Schema
     {
         return $schema
-        ->schema([
-            TextInput::make('label')
-                ->required(),
-            Select::make('type')
-                ->options([
-                    'text' => 'Text',
-                    'checkbox' => 'Checkbox',
-                    'number' => 'Number',
-                ])
-                ->required(),
-            TextInput::make('value'),
-        ]);
+            ->components([
+                TextInput::make('label')
+                    ->required()
+                    ->maxLength(255),
+            ]);
     }
 
     public function infolist(Schema $schema): Schema
@@ -64,7 +49,7 @@ class ChecklistdetailRelationManager extends RelationManager
                     ->searchable(),
             ])
             ->filters([
-                TrashedFilter::make(),
+                //
             ])
             ->headerActions([
                 CreateAction::make(),
@@ -75,20 +60,12 @@ class ChecklistdetailRelationManager extends RelationManager
                 EditAction::make(),
                 DissociateAction::make(),
                 DeleteAction::make(),
-                ForceDeleteAction::make(),
-                RestoreAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DissociateBulkAction::make(),
                     DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
                 ]),
-            ])
-            ->modifyQueryUsing(fn (Builder $query) => $query
-                ->withoutGlobalScopes([
-                    SoftDeletingScope::class,
-                ]));
+            ]);
     }
 }

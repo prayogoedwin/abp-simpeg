@@ -40,6 +40,7 @@ use App\Exports\MembersExport;
 use App\Exports\MembersTemplateExport;
 use App\Imports\MembersImport;
 use App\Filament\Resources\MemberResource\Pages\RekapAbsensi;
+use App\Filament\Resources\MemberResource\Pages\RekapChecklist;
 
 class MemberResource extends Resource
 {
@@ -471,10 +472,16 @@ class MemberResource extends Resource
                     EditAction::make(),
                     
                     TableAction::make('rekapAbsensi')
-                        ->label('Rekap')
+                        ->label('Rekap Absensi')
                         ->icon('heroicon-o-calendar-days')
                         ->color('info')
                         ->url(fn (Member $record): string => static::getUrl('rekap', ['record' => $record])),
+
+                    TableAction::make('rekapChecklist')
+                        ->label('Rekap Checklistt')
+                        ->icon('heroicon-o-calendar-days')
+                        ->color('info')
+                        ->url(fn (Member $record): string => static::getUrl('rekapchecklist', ['record' => $record])),
 
                     TableAction::make('resetDevice')
                         ->label('Reset Device')
@@ -526,6 +533,7 @@ class MemberResource extends Resource
             'edit' => EditMember::route('/{record}/edit'),
             // 'rekap' => \App\Filament\Resources\MemberResource\Pages\RekapAbsensi::route('/{record}/rekap'),
             'rekap' => RekapAbsensi::route('/{record}/rekap'),
+            'rekapchecklist' => RekapChecklist::route('/{record}/rekapchecklist'),
             
         ];
     }
