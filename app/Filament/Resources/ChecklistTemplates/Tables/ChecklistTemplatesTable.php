@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ChecklistTemplates\Tables;
 
+use Dom\Text;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -15,9 +16,14 @@ class ChecklistTemplatesTable
     {
         return $table
             ->columns([
-                TextColumn::make('instansi_id')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('name')
+                    ->label('Nama Template')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('instansi.nama')
+                    ->label('Instansi')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             JenisInstansiSeeder::class,
             InstansiSeeder::class,
             OutsourcingSeeder::class,
+            MemberSeeder::class,
 
             ChecklistTemplateSeeder::class,
             ChecklistTemplateDetailSeeder::class,

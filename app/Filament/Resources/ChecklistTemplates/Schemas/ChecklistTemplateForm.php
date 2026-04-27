@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ChecklistTemplates\Schemas;
 
 use App\Models\Instansi;
+use Dom\Text;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -14,6 +15,12 @@ class ChecklistTemplateForm
     {
         return $schema
             ->schema([
+
+
+                TextInput::make('name')
+                    ->label('Nama Template')
+                    ->required(),
+
                 Select::make('instansi_id')
                     ->label('Instansi')
                     ->options(Instansi::query()->pluck('nama', 'id'))
@@ -46,7 +53,7 @@ class ChecklistTemplateForm
                             ->placeholder('e.g., Room Temperature'),
 
                         TextInput::make('options')
-                            ->label('Options (for select, checkbox, radio)')
+                            ->label('Options (pisahkan dengan koma)')
                             ->placeholder('Comma-separated options, e.g., "Low,Medium,High"')
                             ->visible(fn ($get) => in_array($get('type'), ['select', 'checkbox', 'radio'])),
                             

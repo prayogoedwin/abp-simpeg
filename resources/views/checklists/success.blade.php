@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pilih Template Checklist</title>
+    <title>Success</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -58,27 +58,15 @@
 </head>
 
 <body>
-    <div class="container form-container">
-        <h2>Hallo {{ $quickinfo['logged_in_user'] }} dari Instansi {{ $quickinfo['member_instansi_id'] }}</h2>
-
-    </div>
-
 
     <div class="container form-container">
-        <form action="{{ route('checklist.inputdata') }}" method="POST">
-            @csrf
-
-
-            <label for="template_id" class="form-label">Pilih Template</label>
-            <select id="template_id" name="template_id" class="form-select border-0 border-bottom rounded-0" required>
-                <option value="" disabled selected>Pilih Template</option>
-                @foreach($templates as $template)
-                <option value="{{ $template->id }}">{{ $template->name }}</option>
-                @endforeach
-            </select>
-
-            <button type="submit" class="btn btn-primary mt-3">Lanjutkan</button>
-        </form>
+        <div class="card">
+            <div class="card-header card-header-google"></div>
+            <div class="card-body">
+                <h5 class="card-title">Checklist Berhasil Dibuat!</h5>
+                
+            </div>
+        </div>
     </div>
 
 </body>

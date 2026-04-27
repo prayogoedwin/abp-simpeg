@@ -15,9 +15,14 @@ class ChecklistsTable
     {
         return $table
             ->columns([
-                TextColumn::make('instansi_id')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('name')
+                    ->label('Nama Template')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('instansi.nama')
+                    ->label('Instansi')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -33,7 +33,7 @@ Route::middleware(CheckMaintenanceMode::class)->group(function () {
     Route::get('/news/{id}', [PublikController::class, 'berita_detail'])->name('berita.detail');
     Route::get('/catalog', [PublikController::class, 'katalog'])->name('katalog');
 
-    Route::get('/login', function() {
+    Route::get('/login', function () {
         return redirect()->route('member.login');
     })->name('login');
 
@@ -49,7 +49,6 @@ Route::middleware(CheckMaintenanceMode::class)->group(function () {
 
     Route::get('/produk/{id}/varians', [DashboardMember::class, 'getVarians']);
     Route::post('/cek-poin', [DashboardMember::class, 'cekPoin'])->name('cek-poin');
-
 });
 
 Route::get('/maintenance', function () {
@@ -61,45 +60,41 @@ Route::get('/maintenance', function () {
 
 
 // Login Member
-Route::prefix('member')->group(function() {
+Route::prefix('member')->group(function () {
 
 
-  Route::get('/login/{provider}', [SocialLoginController::class, 'redirectToProvider'])->name('member.social.login');
-        
-  Route::get('/login/{provider}/callback', [SocialLoginController::class, 'handleProviderCallback'])->name('member.social.login.callback');
+    Route::get('/login/{provider}', [SocialLoginController::class, 'redirectToProvider'])->name('member.social.login');
 
-  Route::get('/login', [MemberLoginController::class, 'showLoginForm'])->name('member.login');
-  Route::post('/login', [MemberLoginController::class, 'login'])->name('member.login.submit');
-  
-  // Register Member
-  Route::get('/register', [MemberRegisterController::class, 'showRegisterForm'])->name('member.register');
-  Route::post('/register', [MemberRegisterController::class, 'register'])->name('member.register.submit');
+    Route::get('/login/{provider}/callback', [SocialLoginController::class, 'handleProviderCallback'])->name('member.social.login.callback');
 
-  // Forgot Password
-  Route::get('password/reset', [MemberForgotPasswordController::class, 'showLinkRequestForm'])->name('member.password.request');
-  Route::post('password/email', [MemberForgotPasswordController::class, 'sendResetLinkEmail'])->name('member.password.email');
-    
-  // Reset Password
-  Route::get('password/reset/{token}', [MemberResetPasswordController::class, 'showResetForm'])->name('member.password.reset');  
-  Route::post('password/reset', [MemberResetPasswordController::class, 'reset'])->name('member.password.update');
-  
-  // Logout & Dashboard (dengan middleware)
-  Route::get('/logout', [MemberLoginController::class, 'logout'])->name('member.logout');
+    Route::get('/login', [MemberLoginController::class, 'showLoginForm'])->name('member.login');
+    Route::post('/login', [MemberLoginController::class, 'login'])->name('member.login.submit');
 
-  Route::get('/dashboard', [DashboardMember::class, 'index']) ->middleware('auth:member')->name('member.dashboard');
-  Route::get('/profil', [DashboardMember::class, 'profilMember']) ->middleware('auth:member')->name('member.profil');
-  Route::post('/profil_update', [DashboardMember::class, 'updateProfil']) ->middleware('auth:member')->name('member.profil_update');
+    // Register Member
+    Route::get('/register', [MemberRegisterController::class, 'showRegisterForm'])->name('member.register');
+    Route::post('/register', [MemberRegisterController::class, 'register'])->name('member.register.submit');
 
- 
+    // Forgot Password
+    Route::get('password/reset', [MemberForgotPasswordController::class, 'showLinkRequestForm'])->name('member.password.request');
+    Route::post('password/email', [MemberForgotPasswordController::class, 'sendResetLinkEmail'])->name('member.password.email');
+
+    // Reset Password
+    Route::get('password/reset/{token}', [MemberResetPasswordController::class, 'showResetForm'])->name('member.password.reset');
+    Route::post('password/reset', [MemberResetPasswordController::class, 'reset'])->name('member.password.update');
+
+    // Logout & Dashboard (dengan middleware)
+    Route::get('/logout', [MemberLoginController::class, 'logout'])->name('member.logout');
+
+    Route::get('/dashboard', [DashboardMember::class, 'index'])->middleware('auth:member')->name('member.dashboard');
+    Route::get('/profil', [DashboardMember::class, 'profilMember'])->middleware('auth:member')->name('member.profil');
+    Route::post('/profil_update', [DashboardMember::class, 'updateProfil'])->middleware('auth:member')->name('member.profil_update');
 });
 
+Route::get('/checklist', [ChecklistController::class, 'index'])->name('checklist.index')->middleware('auth:member');
+Route::post('/checklist/inputdata', [ChecklistController::class, 'inputdata'])->name('checklist.inputdata')->middleware('auth:member');
+Route::post('/checklist/submit', [ChecklistController::class, 'submit'])->name('checklist.submit')->middleware('auth:member');
+Route::get('/checklist/success', [ChecklistController::class, 'success'])->name('checklist.success')->middleware('auth:member');
 
-
-
-
-Route::get('/checklist', [ChecklistController::class, 'index'])->name('checklist.index');
-Route::post('/checklist/inputdata', [ChecklistController::class, 'inputdata'])->name('checklist.inputdata');
-Route::post('/checklist/submit', [ChecklistController::class, 'submit'])->name('checklist.submit');
 
 
 // Route::get('/member/profile', [ProfileController::class, 'index'])
@@ -113,9 +108,9 @@ Route::get('/debug-permission', function () {
     if (!auth()->check()) {
         return 'Not logged in';
     }
-    
+
     $user = auth()->user();
-    
+
     return [
         'user_id' => $user->id,
         'user_email' => $user->email,
