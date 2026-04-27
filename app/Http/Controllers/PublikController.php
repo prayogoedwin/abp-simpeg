@@ -20,24 +20,24 @@ use Illuminate\Support\Str;
 class PublikController extends Controller {
 
   public function index() {
-    $expiration = env('REDIS_TIME', 86400);
-    $banners = Cache::remember('banner_data', $expiration, function () {
-        return Banner::where('status', 1)->get();
-    });
+    // $expiration = env('REDIS_TIME', 86400);
+    // $banners = Cache::remember('banner_data', $expiration, function () {
+    //     return Banner::where('status', 1)->get();
+    // });
 
-    return view('publik.main', compact('banners'));
-    // return redirect()->away('https://app.abpoutsourching.com/');
+    // return view('publik.main', compact('banners'));
+    return redirect()->away('https://app.abpoutsourching.com/');
   }
 
   public function berita() {
 
-    $expiration = env('REDIS_TIME', 86400);
-    $beritas = Cache::remember('beritas_data', $expiration, function () {
-        return Berita::all();
-    });
+    // $expiration = env('REDIS_TIME', 86400);
+    // $beritas = Cache::remember('beritas_data', $expiration, function () {
+    //     return Berita::all();
+    // });
     
-    return view('publik.berita', compact('beritas'));
-    // return redirect()->away('https://app.abpoutsourching.com/');
+    // return view('publik.berita', compact('beritas'));
+    return redirect()->away('https://app.abpoutsourching.com/');
   }
    
 
