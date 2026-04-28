@@ -161,27 +161,27 @@
     <table class="summary-table">
         <tr>
             <td class="hadir">
-                <div class="value">{{ $summary['hadir'] ?? 0 }}</div>
+                <div class="value">{{ $summary['total_hadir'] ?? 0 }}</div>
                 <div class="label">Hadir</div>
             </td>
             <td class="telat">
-                <div class="value">{{ $summary['telat'] ?? 0 }}</div>
+                <div class="value">{{ $summary['total_terlambat'] ?? 0 }}</div>
                 <div class="label">Telat</div>
             </td>
             <td class="izin">
-                <div class="value">{{ $summary['izin'] ?? 0 }}</div>
+                <div class="value">{{ $summary['total_izin'] ?? 0 }}</div>
                 <div class="label">Izin</div>
             </td>
             <td class="sakit">
-                <div class="value">{{ $summary['sakit'] ?? 0 }}</div>
+                <div class="value">{{ $summary['total_sakit'] ?? 0 }}</div>
                 <div class="label">Sakit</div>
             </td>
             <td class="alpha">
-                <div class="value">{{ $summary['alpha'] ?? 0 }}</div>
+                <div class="value">{{ $summary['total_alpha'] ?? 0 }}</div>
                 <div class="label">Alpha</div>
             </td>
             <td class="libur">
-                <div class="value">{{ $summary['libur'] ?? 0 }}</div>
+                <div class="value">{{ $summary['total_libur'] ?? 0 }}</div>
                 <div class="label">Libur</div>
             </td>
         </tr>
