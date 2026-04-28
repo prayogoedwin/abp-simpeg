@@ -479,7 +479,7 @@ class MemberResource extends Resource
 
                     TableAction::make('rekapChecklist')
                         ->label('Rekap Checklist')
-                        ->icon('heroicon-o-clipboard-list')
+                        ->icon('heroicon-o-calendar-days')
                         ->color('info')
                         ->url(fn (Member $record): string => static::getUrl('rekapchecklist', ['record' => $record])),
 
