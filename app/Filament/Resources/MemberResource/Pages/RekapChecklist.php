@@ -166,10 +166,11 @@ class RekapChecklist extends Page implements HasForms
     {
         $filename = 'rekap-checklist-' . str()->slug($this->record->name) . '-' . $this->bulan . '-' . $this->tahun . '.pdf';
 
+        // dd($this->record, $this->rekap, $this->periode);
+
         $pdf = Pdf::loadView('exports.rekap-checklist-pdf', [
             'member' => $this->record,
             'rekap' => $this->rekap,
-            'summary' => $this->summary,
             'periode' => $this->periode,
         ])->setPaper('a4', 'portrait');
 

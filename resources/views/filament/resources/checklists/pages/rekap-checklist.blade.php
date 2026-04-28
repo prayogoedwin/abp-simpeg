@@ -24,7 +24,7 @@
         {{-- Rekap Table --}}
         <x-filament::section>
             <x-slot name="heading">
-                Rekap Kehadiran
+                Rekap Checklist Pegawai
             </x-slot>
 
             <div style="overflow-x: auto;">
@@ -80,22 +80,14 @@
             <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.75rem;">
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                     <div style="width: 1rem; height: 1rem; background: rgba(34, 197, 94, 0.3); border-radius: 0.25rem;"></div>
-                    <span style="color: #9ca3af;">Hadir</span>
+                    <span style="color: #9ca3af;">Ada Checklist</span>
                 </div>
                 
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <div style="width: 1rem; height: 1rem; background: rgba(239, 68, 68, 0.3); border-radius: 0.25rem;"></div>
-                    <span style="color: #9ca3af;">Alpha</span>
-                </div>
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                     <div style="width: 1rem; height: 1rem; background: rgba(107, 114, 128, 0.3); border-radius: 0.25rem;"></div>
                     <span style="color: #9ca3af;">Weekend/Libur</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.5rem; margin-left: auto;">
-                    <span style="color: #22c55e;">Hijau = Masuk</span>
-                    <span style="color: #9ca3af;">|</span>
-                    <span style="color: #ef4444;">Merah = Pulang</span>
-                </div>
+                
             </div>
         </x-filament::section>
     @endif

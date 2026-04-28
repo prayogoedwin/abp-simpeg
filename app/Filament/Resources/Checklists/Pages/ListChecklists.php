@@ -19,7 +19,7 @@ class ListChecklists extends ListRecords
                 ->icon('heroicon-o-table-cells')
                 ->color('info')
                 ->url(fn () => ChecklistResource::getUrl('rekap')),
-            CreateAction::make(),
+            
         ];
     }
 }

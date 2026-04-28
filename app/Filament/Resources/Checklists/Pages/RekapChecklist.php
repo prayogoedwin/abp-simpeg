@@ -217,10 +217,10 @@ class RekapChecklist extends Page implements HasForms
 
     public function exportExcel()
     {
-        $filename = 'rekap-absensi-' . str()->slug($this->periode['instansi'] ?? 'all') . '-' . $this->bulan . '-' . $this->tahun . '.xlsx';
+        $filename = 'rekap-checklist-' . str()->slug($this->periode['instansi'] ?? 'all') . '-' . $this->bulan . '-' . $this->tahun . '.xlsx';
         
         return Excel::download(
-            new \App\Exports\RekapAbsensiInstansiExport(
+            new \App\Exports\RekapChecklistInstansiExport(
                 $this->rekapData,
                 $this->tanggalList,
                 $this->periode
@@ -259,6 +259,6 @@ class RekapChecklist extends Page implements HasForms
 
     public function getTitle(): string
     {
-        return "Rekap Absensi";
+        return "Rekap Checklist";
     }
 }
