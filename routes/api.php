@@ -30,4 +30,17 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/status-lain', [AbsensiController::class, 'storeStatusLainnya']);
     });
+
+    Route::prefix('checklist')->group(function () {
+        Route::get('/today', [AbsensiController::class, 'today']);
+        Route::get('/last', [AbsensiController::class, 'last']);
+        Route::post('/clock-in', [AbsensiController::class, 'clockIn']);
+        Route::post('/clock-out', [AbsensiController::class, 'clockOut']);
+        Route::get('/rekap', [AbsensiController::class, 'rekap']);
+        Route::get('/history', [AbsensiController::class, 'history']);
+
+        Route::post('/status-lain', [AbsensiController::class, 'storeStatusLainnya']);
+    });
+
+    
 });
