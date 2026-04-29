@@ -56,7 +56,7 @@ class ChecklistController extends Controller
         // dd($checklistTemplate);
 
         $checklist = Checklist::create([
-            'checklist_template_id' => $checklistTemplate->id,
+            'template_name' => $checklistTemplate->name,
             'instansi_id' => $checklistTemplate->instansi_id,
             'member_id' => auth()->user()->id,
         ]);

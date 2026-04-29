@@ -15,7 +15,7 @@ class ChecklistInfolist
             ->components([
                 TextEntry::make('member.name')
                     ->label('Pegawai'),
-                TextEntry::make('template.name')
+                TextEntry::make('template_name')
                     ->label('Nama Template'),
                 TextEntry::make('instansi.nama')
                     ->label('Instansi'),

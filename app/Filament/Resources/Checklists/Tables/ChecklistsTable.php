@@ -15,7 +15,7 @@ class ChecklistsTable
     {
         return $table
             ->columns([
-                TextColumn::make('template.name')
+                TextColumn::make('template_name')
                     ->label('Nama Template')
                     ->sortable()
                     ->searchable(),

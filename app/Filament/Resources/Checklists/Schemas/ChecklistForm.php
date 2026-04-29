@@ -16,7 +16,7 @@ class ChecklistForm
             ->schema([
 
 
-                TextInput::make('name')
+                TextInput::make('template_name')
                     ->label('Nama Template')
                     ->required(),
 

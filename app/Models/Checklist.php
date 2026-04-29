@@ -10,7 +10,7 @@ class Checklist extends Model
     protected $fillable = [
         'instansi_id',
         'member_id',
-        'checklist_template_id',
+        'template_name',
     ];
 
     public function instansi()
@@ -23,10 +23,7 @@ class Checklist extends Model
         return $this->belongsTo(Member::class);
     }
 
-    public function template()
-    {
-        return $this->belongsTo(ChecklistTemplate::class, 'checklist_template_id');
-    }
+    
 
     public function details()
     {
@@ -54,7 +51,7 @@ class Checklist extends Model
                 'checklist_id' => $checklist?->id,
                 'tanggal' => $currentDate->copy(),
                 'hari' => $currentDate->translatedFormat('l'),
-                'nama_template' => $checklist?->template->name ?? '-',
+                'nama_template' => $checklist?->template_name ?? '-',
             ];
 
             $currentDate->addDay();
