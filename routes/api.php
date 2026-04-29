@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AbsensiController;
+use App\Http\Controllers\Api\ChecklistController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -32,14 +33,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('checklist')->group(function () {
-        Route::get('/today', [AbsensiController::class, 'today']);
-        Route::get('/last', [AbsensiController::class, 'last']);
-        Route::post('/clock-in', [AbsensiController::class, 'clockIn']);
-        Route::post('/clock-out', [AbsensiController::class, 'clockOut']);
-        Route::get('/rekap', [AbsensiController::class, 'rekap']);
-        Route::get('/history', [AbsensiController::class, 'history']);
+        Route::get('/', [ChecklistController::class, 'index']);
+        Route::get('/inputdata', [ChecklistController::class, 'inputdata']);
+        Route::post('/submit', [ChecklistController::class, 'submit']);
 
-        Route::post('/status-lain', [AbsensiController::class, 'storeStatusLainnya']);
     });
 
     

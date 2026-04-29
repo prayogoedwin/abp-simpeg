@@ -1,0 +1,441 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Checklist API Documentation",
+        "description": "API untuk mengelola checklist template dan pengisian checklist",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/api/checklist/": {
+            "get": {
+                "tags": [
+                    "Checklist"
+                ],
+                "summary": "Mendapatkan semua template checklist untuk instansi user yang sedang login",
+                "description": "Mengembalikan daftar template checklist untuk instansi member yang login",
+                "operationId": "getTemplates",
+                "responses": {
+                    "200": {
+                        "description": "Sukses mengambil data template",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Daily Cleaning Checklist"
+                                                    },
+                                                    "instansi_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "nullable": true
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token tidak valid atau tidak disertakan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/checklist/inputdata": {
+            "post": {
+                "tags": [
+                    "Checklist"
+                ],
+                "summary": "Mendapatkan detail template checklist",
+                "description": "Mengambil detail template dan pertanyaan-pertanyaan di dalamnya sebelum user mengisi",
+                "operationId": "getInputData",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "template_id"
+                                ],
+                                "properties": {
+                                    "template_id": {
+                                        "description": "ID template checklist",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sukses mengambil data template dan detail pertanyaan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "checklist": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "Daily Cleaning Checklist"
+                                                        },
+                                                        "instansi_id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "details": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "label": {
+                                                                "type": "string",
+                                                                "example": "Status Kehadiran"
+                                                            },
+                                                            "type": {
+                                                                "type": "string",
+                                                                "example": "radio",
+                                                                "enum": [
+                                                                    "radio",
+                                                                    "checkbox",
+                                                                    "text",
+                                                                    "textarea"
+                                                                ]
+                                                            },
+                                                            "options": {
+                                                                "type": "string",
+                                                                "example": "Hadir, Izin, Sakit, Alfa",
+                                                                "nullable": true
+                                                            },
+                                                            "created_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "nullable": true
+                                                            },
+                                                            "updated_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "nullable": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal (template_id tidak ditemukan)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The selected template id is invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/checklist/submit": {
+            "post": {
+                "tags": [
+                    "Checklist"
+                ],
+                "summary": "Menyimpan jawaban checklist",
+                "description": "Menyimpan hasil pengisian checklist yang sudah diisi oleh member",
+                "operationId": "submitChecklist",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "template_id",
+                                    "answers"
+                                ],
+                                "properties": {
+                                    "template_id": {
+                                        "description": "ID template checklist",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "answers": {
+                                        "description": "Array jawaban sesuai urutan detail pertanyaan dalam template",
+                                        "type": "array",
+                                        "items": {
+                                            "oneOf": [
+                                                {
+                                                    "description": "Untuk tipe radio / text",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "description": "Untuk tipe checkbox (multiple values)",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "example": [
+                                            "Alfa",
+                                            [
+                                                "Depan Lift",
+                                                "Depan Lavender"
+                                            ],
+                                            [
+                                                "Pembersihan"
+                                            ],
+                                            "Ahmad Ferry"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Checklist berhasil disimpan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Checklist tercatat"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "instansi_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "member_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "template_name": {
+                                                    "type": "string",
+                                                    "example": "Daily Cleaning Checklist"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "details": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 45
+                                                            },
+                                                            "checklist_id": {
+                                                                "type": "integer",
+                                                                "example": 10
+                                                            },
+                                                            "type": {
+                                                                "type": "string",
+                                                                "example": "radio"
+                                                            },
+                                                            "label": {
+                                                                "type": "string",
+                                                                "example": "Status Kehadiran"
+                                                            },
+                                                            "options": {
+                                                                "type": "string",
+                                                                "example": "Hadir, Izin, Sakit, Alfa",
+                                                                "nullable": true
+                                                            },
+                                                            "value": {
+                                                                "type": "string",
+                                                                "example": "Alfa"
+                                                            },
+                                                            "created_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "nullable": true
+                                                            },
+                                                            "updated_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "nullable": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token tidak valid atau tidak disertakan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal (template_id tidak valid)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The template id field is required."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Checklist",
+            "description": "Checklist"
+        }
+    ]
+}
