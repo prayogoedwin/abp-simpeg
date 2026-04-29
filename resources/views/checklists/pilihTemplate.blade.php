@@ -59,7 +59,7 @@
 
 <body>
     <div class="container form-container">
-        <h2>Hallo {{ $quickinfo['logged_in_user'] }} dari Instansi {{ $quickinfo['member_instansi_id'] }}</h2>
+        <h2>Hallo {{ $quickinfo['logged_in_user'] }} dari {{ $quickinfo['instansi_name'] }}</h2>
 
     </div>
 

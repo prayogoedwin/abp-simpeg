@@ -22,7 +22,10 @@ class ChecklistController extends Controller
         $quickinfo = [
             'logged_in_user' => auth()->user()->name,
             'member_instansi_id' => $member_instansi_id,
+            'instansi_name' => auth()->user()->instansi->nama,
         ];
+
+        // dd($quickinfo);
 
 
         return view('checklists.pilihTemplate', compact('templates', 'quickinfo'));
