@@ -49,12 +49,12 @@ class RekapAbsensiInstansiExport implements FromArray, WithHeadings, WithTitle, 
                 $absen = $row['absensi'][$tgl['tanggal']] ?? null;
 
                 if ($absen) {
-                    $totalAbsen++;
+                    
 
                     if ($absen['status'] == 'terlambat') {
                         $totalTerlambat++;
                         $rowData[] = $absen['jam_masuk'] . ' / ' . $absen['jam_pulang'];
-                        // Store color info for this cell
+                        $totalAbsen++;
                         $this->statusColors[$rowIndex][$colIndex] = 'terlambat';
                     } elseif ($absen['status'] == 'izin' || $absen['status'] == 'sakit') {
                         $totalIzin++;
@@ -65,11 +65,11 @@ class RekapAbsensiInstansiExport implements FromArray, WithHeadings, WithTitle, 
                         $rowData[] = strtoupper($absen['status']);
                         $this->statusColors[$rowIndex][$colIndex] = 'libur';
                     } elseif ($absen['status'] == 'alpha') {
-                        $totalAbsen--;
                         $rowData[] = $absen['jam_masuk'] . ' / ' . $absen['jam_pulang'];
                         $this->statusColors[$rowIndex][$colIndex] = 'alpha';
                     } elseif ($absen['jam_masuk']) {
                         // Normal attendance with jam_masuk but no special status
+                        $totalAbsen++;
                         $rowData[] = $absen['jam_masuk'] . ' / ' . $absen['jam_pulang'];
                         $this->statusColors[$rowIndex][$colIndex] = 'normal';
                     } else {
