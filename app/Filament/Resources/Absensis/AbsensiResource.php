@@ -56,6 +56,7 @@ class AbsensiResource extends Resource
                         Select::make('member_id')
                             ->label('Pegawai')
                             ->options(Member::query()->pluck('name', 'id'))
+                            ->default(request()->query('member_id'))
                             ->searchable()
                             ->preload()
                             ->required()
@@ -70,6 +71,7 @@ class AbsensiResource extends Resource
                         Select::make('instansi_id')
                             ->label('Instansi')
                             ->options(Instansi::query()->pluck('nama', 'id'))
+                            ->default(request()->query('instansi_id'))
                             ->searchable()
                             ->preload()
                             ->required(),
@@ -77,7 +79,7 @@ class AbsensiResource extends Resource
                         DatePicker::make('tanggal')
                             ->label('Tanggal')
                             ->required()
-                            ->default(now()),
+                            ->default(request()->query('tanggal') ?? now()),
                     ])->columns(3),
 
                 Section::make('Jadwal')

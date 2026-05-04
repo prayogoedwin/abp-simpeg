@@ -179,6 +179,7 @@ class RekapAbsensi extends Page implements HasForms
                     'jam_pulang' => $absen ? ($absen->jam_pulang ? Carbon::parse($absen->jam_pulang)->format('H:i') : '-') : null,
                     'status' => $absen?->status,
                     'is_weekend' => $tgl['is_weekend'],
+                    'ymd' => $tgl['full_date'],
                 ];
             }
 
@@ -190,6 +191,7 @@ class RekapAbsensi extends Page implements HasForms
             'bulan_nama' => Carbon::create($this->tahun, $this->bulan, 1)->translatedFormat('F'),
             'tahun' => $this->tahun,
             'instansi' => Instansi::find($this->instansi_id)?->nama,
+            'instansi_id' => Instansi::find($this->instansi_id)?->id,
         ];
 
         $this->showData = true;
