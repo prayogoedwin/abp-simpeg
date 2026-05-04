@@ -180,8 +180,11 @@ class RekapAbsensi extends Page implements HasForms
                     'status' => $absen?->status,
                     'is_weekend' => $tgl['is_weekend'],
                     'ymd' => $tgl['full_date'],
+                    'absensi' => $absen ? $absen->id : null,
                 ];
             }
+
+            // dd($row);
 
             $this->rekapData[] = $row;
         }

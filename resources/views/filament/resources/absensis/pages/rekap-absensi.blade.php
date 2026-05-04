@@ -66,13 +66,17 @@
                         };
                         }
                         @endphp
-                        <td style="padding: 0.25rem; text-align: center; background: {{ $bgColor }}; vertical-align: top; cursor: pointer;" onclick="window.location.href='{{ route('filament.backend.resources.absensis.create', [
-        'member_id' => $row['member']->id,
-        'instansi_id' => $periode['instansi_id'],
-        'tanggal' => $tgl['full_date']
-    ]) }}'"
-    onmouseover="this.style.filter='brightness(2)'"
-    onmouseout="this.style.filter='none'">
+                        <td style="padding: 0.25rem; text-align: center; background: {{ $bgColor }}; vertical-align: top; cursor: pointer;" onclick="window.location.href='{{ 
+        ($row['absensi'][$tgl['tanggal']]['absensi'] ?? false) 
+            ? route('filament.backend.resources.absensis.edit', ['record' => $row['absensi'][$tgl['tanggal']]['absensi']])
+            : route('filament.backend.resources.absensis.create', [
+                'member_id' => $row['member']->id,
+                'instansi_id' => $periode['instansi_id'],
+                'tanggal' => $tgl['full_date']
+            ])
+    }}'"
+                            onmouseover="this.style.filter='brightness(2)'"
+                            onmouseout="this.style.filter='none'">
                             @if($absen && $absen['jam_masuk'])
                             <div style="font-size: 0.625rem; color: #22c55e;">{{ $absen['jam_masuk'] }}</div>
                             <div style="font-size: 0.625rem; color: #ef4444;">{{ $absen['jam_pulang'] }}</div>
