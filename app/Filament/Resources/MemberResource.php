@@ -145,11 +145,13 @@ class MemberResource extends Resource
                                 TextInput::make('email')
                                     ->email()
                                     ->unique(ignoreRecord: true)
+                                    ->required()
                                     ->maxLength(255),
 
                                 TextInput::make('whatsapp')
                                     ->label('No. WhatsApp')
                                     ->tel()
+                                    ->required()
                                     ->maxLength(20),
                             ])->columns(2),
 
