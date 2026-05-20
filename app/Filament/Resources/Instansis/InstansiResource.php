@@ -121,7 +121,9 @@ class InstansiResource extends Resource
                             ->step(0.00000001),
 
                         TextInput::make('radius')
+                            ->required()
                             ->label('Radius')
+                            ->helperText("500")
                             ->numeric(),
 
                         TextInput::make('google_maps_link')
