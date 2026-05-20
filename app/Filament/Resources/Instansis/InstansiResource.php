@@ -123,7 +123,7 @@ class InstansiResource extends Resource
                         TextInput::make('radius')
                             ->required()
                             ->label('Radius')
-                            ->helperText("500")
+                            ->placeholder(500)
                             ->numeric(),
 
                         TextInput::make('google_maps_link')
