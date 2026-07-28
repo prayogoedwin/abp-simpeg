@@ -32,8 +32,9 @@ class Instansi extends Model
     ];
 
     protected $casts = [
-        'lat' => 'decimal:8',
-        'lng' => 'decimal:8',
+        'lat'    => 'string',
+        'lng'    => 'string',
+        'radius' => 'string',
     ];
 
     public function getActivitylogOptions(): LogOptions
