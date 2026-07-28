@@ -98,7 +98,14 @@ class AuthController extends Controller
                     'no_karyawan' => $member->no_karyawan,
                     'whatsapp' => $member->whatsapp,
                     'foto' => $member->foto ? asset('storage/' . $member->foto) : null,
-                    'instansi' => $member->instansi?->only(['id', 'nama', 'alamat', 'lat', 'lng','radius']),
+                    'instansi' => $member->instansi ? [
+                        'id'      => $member->instansi->id,
+                        'nama'    => $member->instansi->nama,
+                        'alamat'  => $member->instansi->alamat,
+                        'lat'     => (string) $member->instansi->lat,
+                        'lng'     => (string) $member->instansi->lng,
+                        'radius'  => (string) $member->instansi->radius,
+                    ] : null,
                     'posisi' => $member->posisi?->only(['id', 'nama']),
                 ],
                 'token' => $token,
@@ -146,7 +153,7 @@ class AuthController extends Controller
                 'masa_kerja' => $member->masa_kerja,
                 'status_kepegawaian' => $member->status_kepegawaian,
                 'foto' => $member->foto ? asset('storage/' . $member->foto) : null,
-                'instansi' => $member->instansi?->only(['id', 'nama', 'alamat', 'lat', 'lng','radius']),
+                'instansi' => $member->instansi?->only(['id', 'nama', 'alamat', 'lat', 'lng', 'radius']),
                 'posisi' => $member->posisi?->only(['id', 'nama']),
             ],
         ]);
@@ -209,7 +216,7 @@ class AuthController extends Controller
                 'tanggal_lahir' => $member->tanggal_lahir?->format('Y-m-d'),
                 'umur' => $member->umur,
                 'foto' => $member->foto ? asset('storage/' . $member->foto) : null,
-                'instansi' => $member->instansi?->only(['id', 'nama', 'alamat', 'lat', 'lng' ,'radius']),
+                'instansi' => $member->instansi?->only(['id', 'nama', 'alamat', 'lat', 'lng', 'radius']),
                 'posisi' => $member->posisi?->only(['id', 'nama']),
             ],
         ]);
